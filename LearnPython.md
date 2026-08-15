@@ -1,0 +1,1 @@
+print(f"Hello, {name}! Welcome to the program.") this is like literals in js where you can embbed any variable into console value
