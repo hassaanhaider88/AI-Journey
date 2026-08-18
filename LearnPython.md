@@ -186,3 +186,71 @@ MyFunc(40)
 def myFun(a,b):
   print(f"the value of a is {a} and b is {b}")
 myFun(b=34,a=2)
+
+order
+list = ['has', 'been', 'updated', 'successfully']
+
+print(list[1:3])
+
+mutable
+list = ['has', 'been', 'updated', 'successfully']
+
+list[3] = "Hassaan"
+list.append("HAIDER")
+list.insert(1,"HAI HAI")
+
+print(list)
+duplicate
+t = [4,2,3,3,3,4,21,3,5]
+
+list = [3, -1, 4, -5, 9]
+positive = []
+negative = []
+for i in list:
+    if i < 0:
+        negative.append(i)
+    else:
+        positive.append(i)
+
+        
+print("Positive numbers:", positive)
+print("Negative numbers:", negative)
+
+list = [10, 20, 30, 40]
+total = 0
+
+for num in list:
+    total += num
+
+print("the avg is ", total / len(list))
+
+list = [4, 8, 2, 9,12, 1]
+greatest = list[0]
+
+for i in list:
+    if greatest > i:
+        continue
+    else:
+        greatest = i
+
+print(greatest)
+
+list = [4, 8, 2, 9,12, 1]
+greatest = list[0]
+
+for i in list:
+    if greatest > i:
+        continue
+    else:
+        greatest = i
+
+list.remove(greatest)
+
+secGreat = list[0]
+for i in list:
+    if secGreat > i:
+        continue
+    else:
+        secGreat = i
+
+print(secGreat)
