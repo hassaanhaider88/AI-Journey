@@ -173,3 +173,16 @@ while a > 0:
     revers = (revers * 10) + (a % 10)
     a = a // 10
 print(revers == old)
+
+def MyFunc(n):
+    if n <= 0:
+        return
+    print("Hello welcome to the HMK Emperor",n)
+    MyFunc(n-1)
+
+
+MyFunc(40)
+
+def myFun(a,b):
+  print(f"the value of a is {a} and b is {b}")
+myFun(b=34,a=2)
