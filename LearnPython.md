@@ -152,3 +152,24 @@ for i in range(0,len(a),1):
     n = 5
 for i in range(0,11, 1):
     print(f"{i} x {n} = {i*n}")
+
+    a = 456
+while a > 0:
+    print(a % 10)
+    a //= 10
+
+    a = int(input("Ente a number : _"))
+revers = 0
+while a > 0:
+    revers = (revers * 10) + (a % 10)
+    a = a // 10
+print(revers)
+print(type(revers))
+
+a = int(input("Ente a number : -"))
+old = a
+revers = 0
+while a > 0:
+    revers = (revers * 10) + (a % 10)
+    a = a // 10
+print(revers == old)
