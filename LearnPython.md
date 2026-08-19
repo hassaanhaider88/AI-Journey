@@ -254,3 +254,141 @@ for i in list:
         secGreat = i
 
 print(secGreat)
+
+s1 = {10,20,30,40} # Set
+s2 = {30,40,50,60}
+
+print(s1.difference(s2)) elements of s1 that are not present in s2
+print(s2.difference(s1))  elements if s2 that are not present in s1
+s2 -= s1
+print(s2) this will update whole set (second wala)
+print(s1.intersection(s2)) common elements in both sets
+
+s2 & s1
+s2 &= s1 this will update the orignel left sideed set
+ 
+
+
+# ## Dictionary
+# ##Create
+# d = { "name": "Hassaan", "age": 25, "city": "Karachi" }
+
+# ## Accessing Items
+# print(d["name"])  ## Output: Hassaan
+
+# ##Update
+# d["name"] = "Ali"  ## Updating value
+# print(d["name"])  ## Output: Ali
+
+# ##Add
+# d["address"] = "Pakistan"  ## Adding new key-value pair
+# print(d)  ## Output: {'name': 'Ali', 'age': 25, 'city': 'Karachi', 'address': 'Pakistan'}
+
+# ##Delete
+# d.pop("age")  ## Removing key-value pair
+# print(d)  ## Output: {'name': 'Ali', 'city': 'Karachi', 'address': 'Pakistan'}
+
+d = { "name": "Hassaan", "age": 25, "city": "Karachi" }
+
+# print(d.get("name")) # Hassaan
+# print(len(d)) # 3
+# print(d.keys()) # dict_keys(['name', 'age', 'city'])
+# print(d.values()) # dict_values(['Hassaan', 25, 'Karachi'])
+# print(d.items()) # dict_items([('name', 'Hassaan'), ('age', 25), ('city', 'Karachi')])
+# print(d.popitem()) # ('city', 'Karachi') # this will remove the last inserted item from the dictionary
+print(d.setdefault("age", 19)) # 25 # this will add the key-value pair if the key does not exist, otherwise it will return the value of the key
+d.update({"age": 20, "country": "Pakistan"}) # None # this will update the value of the key if it exists, otherwise it will add the key-value pair
+
+print(d)
+
+# d = { "name": "Hassaan", "age": 25, "city": "Karachi" }
+# # Travesing (Loops)
+
+# for i in d:
+#     print(d[i])  # This will print the values of the dictionary
+#     print(i)  # This will print the keys of the dictionary
+
+# d1 = { "name": "Hassaan", "age": 25, "city": "Karachi" }
+# d2 = { "adress" : "Lahore pakistan", "age": 20, }
+
+# # d1.update(d2)  # This will update the values of d1 with the values of d2
+# # print(d1)  
+
+# for i in d2: 
+#     d1[i] = d2[i] 
+
+# print(d1)  
+
+# d = {"a" : 10, "b" : 20, "c" : 30, "d" : 40}
+
+# sum = 0
+
+# for n in d:
+#     sum += d[n]
+
+# print(sum)     
+
+## counting frequency of characters in a string
+# d = ["hello","hello","hello", "world", "hello", "python", "world", "hello","python"]
+
+# # dic = {}
+# # for i in d:
+# #     if i in dic.keys():
+# #         dic[i] = dic[i] + 1
+# #     else:
+# #         dic[i] = 1
+
+# # print(dic)
+
+# dic = {}
+
+# for i in d:
+#     if i in dic.keys():
+#         dic[i] = dic[i] + 1
+#     else :
+#         dic[i] = 1
+
+
+# print(dic)       
+
+d1 = {"a": 10, "b" : 20,"c" :30}
+d2 = {"c": 40, "d" :50,"e" :60}
+
+for i in d2:
+    if i in d1.keys():
+        d1[i] = d1[i] + d2[i]
+    else :
+       d1[i] = d2[i]
+
+
+print(d1)
+print("x" in d1.keys())
+
+
+Exception Handling
+# a = 10
+# b = 0
+
+# # print(a/b) ## ZeroDivisionError
+
+# a = "19"
+# b = 10
+# # print(a + b) ## TypeError
+# # let handle this error
+
+
+# num = int("2asdf")
+# print(num) ## ValueError
+a = int(input("enter your 1st number: -"))
+b = int(input("enter your 2nd number: -"))
+try:
+   print(a / b)
+except Exception as err:
+   print(f"Sorry an error is {err}")
+else:
+   print("not error occure ")
+finally:
+   print("if error or not error this will run every time")
+
+name = input("Please enter your name._")
+print(f"Thanks for makingn account {name}")
