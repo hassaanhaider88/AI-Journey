@@ -392,3 +392,11 @@ finally:
 
 name = input("Please enter your name._")
 print(f"Thanks for makingn account {name}")
+
+for rasing custom error messages
+age = int(input("enter your age:-"));
+
+if age < 18:
+    raise TypeError("Your are not eligigle")
+
+print("You are elegible")
