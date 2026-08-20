@@ -418,4 +418,54 @@ print("You are elegible")
 with open("hello.txt","a") as fs:
     data = input("/n enter you data")
     fs.write(data)
-    
+
+
+
+# OOPS in Python
+What is special about OOPS?
+- Make your code more reuseable
+- Easier to work with large Programs
+- OOP programs prevent you from repeating code.
+- OOP provide you security
+
+## Class
+-> A class is a blueprint for creating objects. 
+Objects are instances of classes.
+-> Syntax
+class (keyword) className:
+    property : values
+
+varibales defind in class called attributes
+functions defind in class called motheds
+
+class Animsl:
+   spcies = "Dog" # Arrtibute
+
+   def maek_sound(self): # method
+       print("bark!)
+
+Accessing attributes and methods
+class Car:
+    a = 12
+
+    def hello():
+      return "hello AI ML"
+
+### now hello1 become object
+hello1 = Car
+print(hello1.a)
+print(hello1.hello())
+
+
+## Constructors
+https://youtu.be/IhG3UJzkjnw?list=PLiJFOrVU2fnFRbfj5vwG6AEZJrN0SAIiE&t=1597
+
+## Encapsulations
+=> Inprogarmming, Encapsulation si about keeping some info (data) safe adn only letting it be changed or looked at in specific work.
+## Polymorphizm
+=> mean heaving many forms.
+matbl ke eak he cheez diffrent tasks perform kr paa rahi hai.
+## Inheritance
+=> When one class inherits (get) some features from another class this phenomena is known as inheritance
+## Abstaction
+=> when we see the seentail part of our code and hides the rest is the process of Abstaction.
