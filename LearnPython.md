@@ -400,3 +400,22 @@ if age < 18:
     raise TypeError("Your are not eligigle")
 
 print("You are elegible")
+
+
+# CRUD Files via python
+
+# open("hello.txt","x") # create file
+
+# file = open("hello.txt","r") # write file if not exist then add one"
+# data = input("What you want to add: ")
+
+# file.write(data)
+
+
+# fileData = open("hello.txt",'r' );
+# print(fileData.read())
+
+with open("hello.txt","a") as fs:
+    data = input("/n enter you data")
+    fs.write(data)
+    
