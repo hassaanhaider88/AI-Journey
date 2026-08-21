@@ -778,3 +778,50 @@ class car(enfore):
 class truck:
     pass
  ```
+
+
+ ## Dunder Methods
+ - are special methods in python that start and end with double underscores
+ __init__, __str__,__add__ etc
+ - They automatically  get called when you perform certain actions on object
+ - help in cutomize behavior of classess and making classes behave like builtin dtaa ypes
+
+ ```py 
+ class number:
+    def __init__(self,num):
+        self.num = num
+    def __add__(self, other):
+        return self.num + other.num
+
+num1 = number(2)
+num2 = number(9)
+print(num1 + num2)
+ ```
+
+- dir(a) 
+
+## Initialization and Representation
+
+__init__(self, ...): Initializes a new instance of a class after allocation.
+__new__(cls, ...): Creates and allocates memory for a new instance before __init__ runs.
+__str__(self): Returns a human-readable or informal string text when print() or str() is called.
+__repr__(self): Returns an official, unambiguous string text meant for debugging and developer views.
+__del__(self): Acts as the destructor or cleanup method when an object is about to be destroyed.
+
+## Comparison Operators__eq__(self, other): Powers the equality check (==).
+
+__ne__(self, other): Powers the inequality check (!=).
+__lt__(self, other): Powers the less-than check (<).
+__le__(self, other): Powers the less-than-or-equal check (<=).
+__gt__(self, other): Powers the greater-than check (>).
+__ge__(self, other): Powers the greater-than-or-equal check (>=).
+
+## Arithmetic and Operators__add__(self, other): Defines custom behavior for addition (+).
+
+__sub__(self, other): Defines custom behavior for subtraction (-).
+__mul__(self, other): Defines custom behavior for multiplication (*).
+__truediv__(self, other): Defines custom behavior for true division
+
+many more...
+
+https://youtu.be/IhG3UJzkjnw?list=PLiJFOrVU2fnFRbfj5vwG6AEZJrN0SAIiE&t=7888
