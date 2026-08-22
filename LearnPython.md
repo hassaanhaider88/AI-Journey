@@ -882,3 +882,8 @@ def addition(a,b,c):
     print(a+b+c)
 
 ```
+
+# One liner
+
+a = int(input("enter your number:- "))
+print("Even") if a % 2 == 0 else print("odd")
