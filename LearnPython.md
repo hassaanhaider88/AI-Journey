@@ -884,6 +884,48 @@ def addition(a,b,c):
 ```
 
 # One liner
-
+```py
 a = int(input("enter your number:- "))
 print("Even") if a % 2 == 0 else print("odd")
+
+a = [1,3,5,21,34,2,2,6,64,4,23,22,2,2,2,24,4,4]
+b = []
+c = []
+
+for i in a:
+    if i % 2 == 0:
+        b.append(i)
+    else:
+        c.append(i)
+
+print("even number:",b) 
+print("Odd number:",c) 
+
+a = [1,3,5,21,34,2,2,6,64,4,23,22,2,2,2,24,4,4]
+
+b = [i for i in a if i % 2 == 0]
+c = [i for i in a if not i % 2 == 0]
+
+print("even number:",b) 
+print("Odd number:",c) 
+```
+
+# Lambda Functions
+- a small, one-line anonymous function
+- mbda arguments: expression
+- use with one liner
+```py
+def check(a):
+    if a % 2 ==0:
+        print("even")
+    else:
+        print("odd")
+
+check(23)
+check(232)
+
+check = lambda x:print("even") if x % 2 == 0 else print("Odd")
+
+check(23)
+check(2354)
+```
