@@ -1,0 +1,31 @@
+{
+    "students": [
+        {
+            "name": "Hassaan Haider",
+            "age": 20,
+            "roll_no": "01",
+            "email": " hassaanhaide@g.com",
+            "grades": {
+                "Math": 98
+            }
+        },
+        {
+            "name": "HMK",
+            "age": 23,
+            "roll_no": "02",
+            "email": "hmk@hmk.com",
+            "grades": {
+                "Math": 90
+            }
+        }
+    ],
+    "teachers": [
+        {
+            "name": "azhar",
+            "age": 20,
+            "emp_id": "001",
+            "email": "azhar@hcom.com",
+            "subject": "math"
+        }
+    ]
+}
