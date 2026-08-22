@@ -929,3 +929,33 @@ check = lambda x:print("even") if x % 2 == 0 else print("Odd")
 check(23)
 check(2354)
 ```
+
+
+# Map(), filter(), zip
+
+
+a = ["Hmk","Code","Web"]
+
+
+for i in a:
+    print(len(i))
+
+lengths = list( map(len,a))
+
+print(lengths)
+
+temp_cel = [9,39,24,52]
+
+def conver(a):
+   return ( a * 9/5) + 32
+
+forn = list(map(conver,temp_cel))
+print(forn)
+
+m = [2,42,42,24,35,4]
+pass = filter(lambda x : x>=40,m)
+
+name = ["Hmk","Code","Web"]
+marks= [90,98,80]
+
+pairs  = list(zip(name, marks))
