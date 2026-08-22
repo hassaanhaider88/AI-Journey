@@ -824,4 +824,61 @@ __truediv__(self, other): Defines custom behavior for true division
 
 many more...
 
-https://youtu.be/IhG3UJzkjnw?list=PLiJFOrVU2fnFRbfj5vwG6AEZJrN0SAIiE&t=7888
+
+# Decorators
+- just like wrappper around the functions
+- use @ before decorators
+- this will called before and after that particular function's called 
+- in other words A decorator wraps a function to add extra behaviour without modifying its code. Think of it as gift wrapping — the gift (function) is still the same, but it now has a wrapper around it.
+```py 
+def extraGreeting(func):
+    def wrapper():
+        print("Hello from Decorator Fnc")
+        func()
+        print("Thank visit again...")
+
+    return wrapper()
+
+@extraGreeting #Decorators
+def Greeting():
+    print("Good morning...")
+```
+
+## *args and **kwargs
+- When you don't know how many arguments a function will receive, use *args (for positional) and **kwargs (for keyword).
+- args make tuple and kwargs create dict
+
+```py 
+def addintion(*arg):
+    s = 0
+    for i in arg:
+        s += i
+    return s
+
+
+print(addintion(23,5,23,2,5))
+
+
+def profile(**kwargs):       # kwargs is a dict
+    for k, v in kwargs.items():
+        print(f"{k}: {v}")
+
+profile(name="HMK", age=20)
+```
+### real world examples
+```py
+
+def extraGreeting(func):
+    def wrapper(*args,**kwargs):
+        print("Hello from Decorator Fnc")
+        func(*args,**kwargs)
+        print("Thank visit again...")
+
+    return wrapper()
+
+
+@extraGreeting
+def addition(a,b,c):
+    print(a+b+c)
+
+```
