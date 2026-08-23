@@ -962,3 +962,18 @@ pairs  = list(zip(name, marks))
 print(pairs)
 
 ```
+
+```py
+from math_utility import addition
+
+print(addition(23,3))
+
+import math_utility
+
+print(math_utility.addition(23,34))
+
+import math_utility as mt
+
+mt.addition(3,53)
+
+```
