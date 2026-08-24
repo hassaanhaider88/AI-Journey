@@ -1,0 +1,1991 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pandas: The Complete Course | Sheryians AI School</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #14161b; --bg-alt: #191c22; --card: #1c1f27; --cell-bg: #1f232b; --cell-border: #2c313c; --border: #262a33;
+    --text: #e9e7e2; --text-dim: #9198a6; --text-faint: #5f6673;
+    --accent: #f3872e; --accent-soft: rgba(243,135,46,.13);
+    --teal: #5fe4c8; --teal-soft: rgba(95,228,200,.1);
+    --purple: #c9a6f5; --purple-soft: rgba(201,166,245,.1);
+    --red: #ef7a6a; --red-soft: rgba(239,122,106,.1);
+    --shadow: rgba(0,0,0,.55);
+  }
+  html[data-theme="light"]{
+    --bg: #faf8f5; --bg-alt: #f1eee7; --card: #ffffff; --cell-bg: #f6f3ee; --cell-border: #e3ddd0; --border: #e9e3d7;
+    --text: #201e1a; --text-dim: #5c584f; --text-faint: #8a8477;
+    --accent: #d9660f; --accent-soft: rgba(217,102,15,.1);
+    --teal: #0a8f79; --teal-soft: rgba(10,143,121,.08);
+    --purple: #7c53c9; --purple-soft: rgba(124,83,201,.08);
+    --red: #c1483d; --red-soft: rgba(193,72,61,.08);
+    --shadow: rgba(120,110,90,.15);
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    background: var(--bg); color: var(--text);
+    font-family:'Manrope', sans-serif; line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+    transition: background-color .35s ease, color .35s ease;
+  }
+  .mono{ font-family:'JetBrains Mono', monospace; }
+  ::selection{ background: var(--accent-soft); color: var(--accent); }
+
+  #progress-bar{
+    position: fixed; top:0; left:0; height:3px; width:0%;
+    background: linear-gradient(90deg, var(--accent), var(--teal));
+    z-index: 200; transition: width .1s ease-out;
+  }
+  #theme-toggle{
+    position: fixed; top: 18px; right: 20px; z-index: 150;
+    width: 42px; height: 42px; border-radius: 50%;
+    background: var(--card); border: 1px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; box-shadow: 0 8px 20px var(--shadow);
+    transition: transform .2s ease, border-color .2s ease;
+  }
+  #theme-toggle:hover{ border-color: var(--accent); transform: scale(1.06); }
+  #theme-toggle svg{ width:19px; height:19px; }
+  #back-to-top{
+    position: fixed; bottom: 24px; right: 20px; z-index: 150;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--accent); border:none; color:#14161b;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; box-shadow: 0 8px 20px var(--shadow);
+    opacity:0; pointer-events:none; transition: opacity .25s ease, transform .2s ease;
+  }
+  #back-to-top.show{ opacity:1; pointer-events:auto; }
+  #back-to-top:hover{ transform: translateY(-3px); }
+
+  .wrap{ max-width: 900px; margin:0 auto; padding: 0 24px; }
+  section{ padding: 100px 0; }
+
+  #hero{ padding-top: 130px; text-align:center; }
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace; font-size:13px; letter-spacing:.14em;
+    text-transform:uppercase; color: var(--accent); margin-bottom:20px;
+    display:flex; align-items:center; justify-content:center; gap:10px;
+  }
+  .eyebrow::before, .eyebrow::after{ content:""; width:26px; height:1px; background: var(--accent); opacity:.5; }
+  h1.hero-title{ font-size: clamp(36px, 6vw, 56px); font-weight:800; letter-spacing:-.02em; line-height:1.1; margin-bottom:22px; }
+  .hero-title .hl{ color: var(--accent); }
+  .hero-sub{ font-size:18px; color: var(--text-dim); max-width:600px; margin:0 auto 40px; }
+  .hero-stats{ display:flex; justify-content:center; gap: 36px; flex-wrap:wrap; }
+  .hero-stat .num{ font-family:'JetBrains Mono', monospace; font-size:24px; font-weight:700; color:var(--teal); }
+  .hero-stat .lbl{ font-size:12.5px; color: var(--text-faint); text-transform:uppercase; letter-spacing:.06em; }
+
+  #toc .hero-sub{ margin-bottom: 46px; }
+  .toc-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:14px; }
+  .toc-card{
+    background: var(--card); border:1px solid var(--border); border-radius:14px;
+    padding: 20px 20px 18px; text-decoration:none; color:var(--text);
+    display:flex; flex-direction:column; gap:8px;
+    transition: border-color .2s ease, transform .2s ease; position: relative;
+  }
+  .toc-card.ready:hover{ border-color: var(--accent); transform: translateY(-3px); }
+  .toc-card.locked{ opacity:.5; }
+  .toc-num{ font-family:'JetBrains Mono', monospace; font-size:12px; color: var(--text-faint); }
+  .toc-title{ font-size:14.5px; font-weight:700; }
+  .toc-desc{ font-size:12.5px; color: var(--text-dim); }
+  .toc-pill{ position:absolute; top:16px; right:16px; font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:.04em; padding:3px 9px; border-radius:999px; text-transform:uppercase; }
+  .toc-pill.ready{ background: var(--teal-soft); color: var(--teal); }
+  .toc-pill.soon{ background: var(--border); color: var(--text-faint); }
+
+  .chapter{ border-top:1px solid var(--border); scroll-margin-top: 30px; }
+  .ch-meta{ display:flex; align-items:center; gap:12px; margin-bottom:18px; }
+  .ch-eyebrow{ font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:.1em; text-transform:uppercase; color: var(--accent); }
+  .ch-badge{ font-family:'JetBrains Mono', monospace; font-size:11px; color: var(--text-faint); border:1px solid var(--border); padding:3px 10px; border-radius:999px; }
+  h2.ch-title{ font-size: clamp(28px, 4vw, 38px); font-weight:800; letter-spacing:-.01em; margin-bottom:18px; }
+  .step-label{ font-family:'JetBrains Mono', monospace; font-size:11.5px; letter-spacing:.08em; text-transform:uppercase; color: var(--text-faint); margin: 40px 0 12px; display:flex; align-items:center; gap:10px; }
+  .step-label::before{ content:""; width:14px; height:1px; background: var(--text-faint); }
+  p.body-text{ color: var(--text-dim); font-size:16px; max-width: 660px; margin-bottom:16px; }
+  strong.emph{ color: var(--text); }
+
+  .info-card{ border-radius:12px; padding:20px 22px; margin: 18px 0; border-left:3px solid; font-size:14.5px; }
+  .info-card .info-label{ font-family:'JetBrains Mono', monospace; font-size:11.5px; letter-spacing:.06em; text-transform:uppercase; margin-bottom:8px; display:block; font-weight:700; }
+  .info-card p{ color: var(--text-dim); }
+  .info-card.remember{ background: var(--teal-soft); border-color: var(--teal); }
+  .info-card.remember .info-label{ color: var(--teal); }
+  .info-card.mistake{ background: var(--red-soft); border-color: var(--red); }
+  .info-card.mistake .info-label{ color: var(--red); }
+  .info-card.insight{ background: var(--accent-soft); border-color: var(--accent); }
+  .info-card.insight .info-label{ color: var(--accent); }
+  .info-card.tip{ background: var(--purple-soft); border-color: var(--purple); }
+  .info-card.tip .info-label{ color: var(--purple); }
+  .info-card.usecase{ background: var(--teal-soft); border-color: var(--teal); }
+  .info-card.usecase .info-label{ color: var(--teal); }
+
+  .code-block{ background: var(--cell-bg); border:1px solid var(--cell-border); border-radius:12px; overflow:hidden; margin: 18px 0; }
+  .code-head{ display:flex; align-items:center; justify-content:space-between; padding:10px 16px; background: var(--bg-alt); border-bottom:1px solid var(--cell-border); }
+  .code-head .left{ display:flex; align-items:center; gap:10px; }
+  .code-dots{ display:flex; gap:6px; }
+  .code-dots span{ width:8px; height:8px; border-radius:50%; background: var(--border); }
+  .code-lang{ font-family:'JetBrains Mono', monospace; font-size:11px; color: var(--text-faint); }
+  .code-actions{ display:flex; gap:8px; }
+  .code-btn{ font-family:'JetBrains Mono', monospace; font-size:11px; color: var(--text-dim); background:transparent; border:1px solid var(--border); border-radius:7px; padding:5px 11px; cursor:pointer; transition: all .15s ease; }
+  .code-btn:hover{ border-color: var(--accent); color: var(--accent); }
+  .code-btn.run-btn{ color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+  pre.code-body{ padding:18px 20px; font-family:'JetBrains Mono', monospace; font-size:13.5px; overflow-x:auto; white-space:pre; }
+  .kw{ color: var(--purple); } .str{ color: var(--teal); } .fn{ color:#7fb4ff; } .cmt{ color: var(--text-faint); }
+  html[data-theme="light"] .fn{ color:#2563b0; }
+  .code-output{ display:none; border-top:1px solid var(--cell-border); }
+  .code-output.show{ display:block; animation: fadeIn .3s ease; }
+  .code-output .out-label{ padding:8px 20px 0; font-family:'JetBrains Mono', monospace; font-size:10.5px; color: var(--text-faint); text-transform:uppercase; letter-spacing:.06em; }
+  .code-output pre{ padding:8px 20px 16px; font-family:'JetBrains Mono', monospace; font-size:13.5px; color: var(--text-dim); white-space:pre; }
+  @keyframes fadeIn{ from{opacity:0;} to{opacity:1;} }
+
+  /* ---------- Jupyter-style DataFrame table ---------- */
+  .df-wrap{ overflow-x:auto; border-radius:12px; border:1px solid var(--cell-border); margin: 16px 0; }
+  .df-table{ border-collapse:collapse; width:100%; font-family:'JetBrains Mono', monospace; font-size:12.5px; }
+  .df-table thead th{ background: var(--bg-alt); color: var(--text-dim); padding:10px 16px; border-bottom:2px solid var(--cell-border); font-weight:600; white-space:nowrap; }
+  .df-table th.df-index-h{ background: var(--bg-alt); }
+  .df-table td{ padding:9px 16px; border-bottom:1px solid var(--cell-border); color: var(--text); white-space:nowrap; }
+  .df-table td.df-index{ color: var(--text-faint); font-weight:600; background: var(--bg-alt); }
+  .df-table tbody tr:hover td{ background: var(--accent-soft); }
+  .df-table td.df-nan{ color: var(--red); font-style:italic; }
+  .df-table .anatomy-highlight{ background: var(--accent-soft) !important; outline:2px solid var(--accent); outline-offset:-2px; }
+  .df-caption{ font-size:12px; color: var(--text-faint); margin-top:-8px; margin-bottom:16px; }
+
+  .task-list{ list-style:none; padding:0; margin:14px 0; }
+  .task-list li{ padding:9px 0 9px 26px; position:relative; color: var(--text-dim); font-size:14px; border-bottom:1px solid var(--border); }
+  .task-list li:last-child{ border-bottom:none; }
+  .task-list li::before{ content:"\2192"; position:absolute; left:0; color: var(--accent); font-family:'JetBrains Mono', monospace; }
+
+  /* ---------- tabs / toggle buttons ---------- */
+  .tabs{ display:flex; gap:8px; margin: 16px 0; flex-wrap:wrap; }
+  .tab-btn{ font-family:'JetBrains Mono', monospace; font-size:12.5px; background:transparent; border:1px solid var(--border); color:var(--text-dim); padding:8px 16px; border-radius:999px; cursor:pointer; transition: all .15s ease; }
+  .tab-btn:hover{ border-color: var(--accent); color: var(--text); }
+  .tab-btn.active{ background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+
+  /* ---------- playground ---------- */
+  .playground{ background: var(--card); border:1px solid var(--border); border-radius:16px; padding:26px 26px 24px; margin: 22px 0; }
+  .pg-controls{ display:flex; gap:14px; flex-wrap:wrap; align-items:flex-end; margin-bottom:6px; }
+  .pg-field{ display:flex; flex-direction:column; }
+  .pg-field label{ font-family:'JetBrains Mono', monospace; font-size:10.5px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.05em; margin-bottom:7px; }
+  .pg-field select, .pg-field input{ background: var(--bg-alt); border:1px solid var(--border); color: var(--text); padding:9px 12px; border-radius:8px; font-family:'JetBrains Mono', monospace; font-size:13px; width:150px; }
+
+  /* ---------- comparison table ---------- */
+  .dim-table{ width:100%; border-collapse:collapse; margin:20px 0; font-size:13.5px; }
+  .dim-table th, .dim-table td{ text-align:left; padding:10px 14px; border-bottom:1px solid var(--border); }
+  .dim-table th{ color: var(--text-faint); font-family:'JetBrains Mono', monospace; font-size:11px; text-transform:uppercase; letter-spacing:.05em; font-weight:600; }
+  .dim-table td.dim-name{ color: var(--teal); font-family:'JetBrains Mono', monospace; font-weight:600; }
+
+  /* ---------- architecture diagram ---------- */
+  .diagram-shell{ background: var(--card); border:1px solid var(--border); border-radius: 20px; padding: 44px 30px; margin: 24px 0; overflow:hidden; }
+  .eco-svg{ width:100%; height:auto; display:block; }
+  .eco-node rect{ fill: var(--cell-bg); stroke: var(--cell-border); stroke-width:1.5; transition: stroke .3s ease; }
+  .eco-node text{ fill: var(--text); font-family:'JetBrains Mono', monospace; }
+  .eco-node.visible rect{ stroke: var(--accent); }
+  .eco-node{ opacity:0; transform: translateY(14px); transition: opacity .6s ease, transform .6s ease; }
+  .eco-node.visible{ opacity:1; transform: translateY(0); }
+  .eco-path.flow{ stroke: var(--accent); stroke-width:2; fill:none; stroke-dasharray: 300; stroke-dashoffset: 300; transition: stroke-dashoffset 1.2s ease; }
+  .eco-path.flow.visible{ stroke-dashoffset: 0; }
+
+  /* ---------- quiz ---------- */
+  .quiz-block{ background: var(--card); border:1px solid var(--border); border-radius:14px; padding:26px 26px 24px; margin: 30px 0; }
+  .quiz-q{ font-weight:700; font-size:15.5px; margin-bottom:16px; }
+  .quiz-opts{ display:flex; flex-direction:column; gap:9px; }
+  .quiz-opt{ text-align:left; background: var(--bg-alt); border:1px solid var(--border); color: var(--text); padding:12px 16px; border-radius:9px; font-size:14px; cursor:pointer; font-family:'Manrope', sans-serif; transition: all .15s ease; }
+  .quiz-opt:hover{ border-color: var(--accent); }
+  .quiz-opt.correct{ border-color: var(--teal); background: var(--teal-soft); color: var(--teal); }
+  .quiz-opt.wrong{ border-color: var(--red); background: var(--red-soft); color: var(--red); }
+  .quiz-feedback{ margin-top:14px; font-size:13.5px; color: var(--text-dim); display:none; }
+  .quiz-feedback.show{ display:block; animation: fadeIn .3s ease; }
+
+  .prop-grid{ display:flex; flex-wrap:wrap; gap:10px; margin: 16px 0; }
+  .prop-chip{ font-family:'JetBrains Mono', monospace; font-size:12.5px; background: var(--cell-bg); border:1px solid var(--cell-border); border-radius:9px; padding:9px 14px; color: var(--text-dim); }
+  .prop-chip b{ color: var(--teal); }
+
+  @keyframes rowEnter{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:translateY(0); } }
+
+  /* ---------- split-apply-combine visual (section 7) ---------- */
+  .sac-flow{ display:flex; align-items:center; gap:20px; flex-wrap:wrap; margin:20px 0; padding:24px; background: var(--card); border:1px solid var(--border); border-radius:14px; }
+  .sac-stage{ text-align:center; flex:1; min-width:110px; }
+  .sac-icon{ font-size:26px; margin-bottom:8px; }
+  .sac-label{ font-family:'JetBrains Mono', monospace; font-size:13px; font-weight:700; color: var(--text); }
+  .sac-sub{ font-size:11.5px; color: var(--text-faint); margin-top:2px; }
+  .sac-arrow{ font-size:20px; color: var(--text-faint); }
+  .sac-stage.pulse{ animation: sacPulse .5s ease; }
+  @keyframes sacPulse{ 0%{ transform:scale(1); } 50%{ transform:scale(1.05); box-shadow:0 0 0 4px var(--accent-soft); border-radius:12px; } 100%{ transform:scale(1); } }
+
+  .quiz-tag{ font-family:'JetBrains Mono', monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color: var(--accent); background: var(--accent-soft); padding:3px 10px; border-radius:999px; display:inline-block; margin-bottom:10px; }
+  .quiz-code{ background: var(--bg-alt); border:1px solid var(--border); border-radius:8px; padding:12px 14px; font-family:'JetBrains Mono', monospace; font-size:13px; margin:10px 0 16px; white-space:pre; overflow-x:auto; color: var(--text-dim); }
+
+  .insight-qa{ display:flex; flex-direction:column; gap:12px; margin:20px 0; }
+  .qa-item{ background: var(--card); border:1px solid var(--border); border-radius:12px; padding:16px 20px; }
+  .qa-q{ font-size:14px; color: var(--text-dim); margin-bottom:8px; }
+  .qa-a{ font-family:'JetBrains Mono', monospace; font-size:14.5px; color: var(--teal); font-weight:600; }
+
+  .roadmap-flow{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:26px 0; }
+  .roadmap-step{ font-family:'JetBrains Mono', monospace; font-size:12px; background: var(--card); border:1px solid var(--border); padding:8px 14px; border-radius:999px; color: var(--text-dim); }
+  .roadmap-arrow{ color: var(--text-faint); font-size:13px; }
+  .roadmap-step.final{ background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight:700; }
+  .pull-quote{ font-size: clamp(20px, 3vw, 26px); font-weight:700; line-height:1.4; color: var(--text); border-left:3px solid var(--accent); padding-left:22px; margin: 30px 0; }
+
+  footer{ text-align:center; padding: 50px 24px 70px; color: var(--text-faint); font-family:'JetBrains Mono', monospace; font-size:12px; border-top:1px solid var(--border); }
+
+  @media (max-width: 760px){
+    .toc-grid{ grid-template-columns: 1fr; }
+    section{ padding: 64px 0; }
+    #hero{ padding-top: 100px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+<button id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+  <svg id="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"></svg>
+</button>
+<button id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top">
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+
+<section id="hero">
+  <div class="wrap">
+    <div class="eyebrow">Sheryians AI School</div>
+    <h1 class="hero-title">Pandas — turning messy data<br>into <span class="hl">answers</span></h1>
+    <p class="hero-sub">Picks up exactly where the NumPy course left off. One real, messy employee dataset, carried through every section — load it, clean it, question it, summarize it.</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="num">7</div><div class="lbl">Core Sections</div></div>
+      <div class="hero-stat"><div class="num">1</div><div class="lbl">Dataset, Start to Finish</div></div>
+      <div class="hero-stat"><div class="num">20+</div><div class="lbl">Practice Questions</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="toc">
+  <div class="wrap">
+    <div class="eyebrow" id="toc-heading">Course Map</div>
+    <h2 class="ch-title" style="text-align:center;">7 sections, one continuous analysis</h2>
+    <p class="hero-sub" style="text-align:center;">Section 1 is live below. This course stops at Grouping &amp; Aggregation on purpose — merging, pivoting, and time series are a different day.</p>
+    <div class="toc-grid">
+      <a href="#s1" class="toc-card ready"><span class="toc-pill ready">Ready</span><span class="toc-num">01</span><span class="toc-title">Why Do We Need Pandas?</span><span class="toc-desc">From Python lists to labeled, mixed-type tables.</span></a>
+      <a href="#s2" class="toc-card ready"><span class="toc-pill ready">Ready</span><span class="toc-num">02</span><span class="toc-title">Creating &amp; Loading Data</span><span class="toc-desc">Series, DataFrames, read_csv, and first inspection.</span></a>
+      <a href="#s3" class="toc-card ready"><span class="toc-pill ready">Ready</span><span class="toc-num">03</span><span class="toc-title">Selecting &amp; Filtering</span><span class="toc-desc">Columns, loc vs iloc, and boolean filtering.</span></a>
+      <a href="#s4" class="toc-card ready"><span class="toc-pill ready">Ready</span><span class="toc-num">04</span><span class="toc-title">Cleaning Data</span><span class="toc-desc">Missing values, duplicates, dtypes, renaming.</span></a>
+      <a href="#s5" class="toc-card ready"><span class="toc-pill ready">Ready</span><span class="toc-num">05</span><span class="toc-title">Modifying &amp; New Columns</span><span class="toc-desc">apply(), lambda, map(), and feature engineering.</span></a>
+      <a href="#s6" class="toc-card ready"><span class="toc-pill ready">Ready</span><span class="toc-num">06</span><span class="toc-title">Sorting &amp; Ranking</span><span class="toc-desc">sort_values, rank, nlargest &amp; nsmallest.</span></a>
+      <a href="#s7" class="toc-card ready"><span class="toc-pill ready">Ready</span><span class="toc-num">07</span><span class="toc-title">Grouping &amp; Aggregation</span><span class="toc-desc">Split &ndash; apply &ndash; combine, the big one.</span></a>
+      <a href="#workflow" class="toc-card ready"><span class="toc-pill ready">Ready</span><span class="toc-num">＋</span><span class="toc-title">Real-World Workflow</span><span class="toc-desc">The full case study, start to finish.</span></a>
+      <a href="#practice" class="toc-card ready"><span class="toc-pill ready">Ready</span><span class="toc-num">＋</span><span class="toc-title">Practice Questions</span><span class="toc-desc">20+ questions with instant feedback.</span></a>
+    </div>
+  </div>
+</section>
+
+<section class="chapter" id="s1">
+  <div class="wrap">
+    <div class="ch-meta"><span class="ch-eyebrow">Section 01</span><span class="ch-badge">Foundations</span></div>
+    <h2 class="ch-title">Why Do We Need Pandas?</h2>
+
+    <div class="step-label">The problem</div>
+    <p class="body-text">You already know how to store data in Python lists. Here's the same three employees, stored the "list" way:</p>
+    <div class="code-block">
+      <div class="code-head"><div class="left"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">the_list_way.py</span></div><div class="code-actions"><button class="code-btn" onclick="copyCode(this)">Copy</button></div></div>
+      <pre class="code-body">names = [<span class="str">"Aman"</span>, <span class="str">"Riya"</span>, <span class="str">"Rahul"</span>]
+ages = [<span class="str">24</span>, <span class="str">28</span>, <span class="str">26</span>]
+salaries = [<span class="str">40000</span>, <span class="str">65000</span>, <span class="str">50000</span>]</pre>
+    </div>
+    <p class="body-text">Now imagine this at 500 employees, with missing salaries, duplicate entries, and dates mixed in. Ask yourself: can you efficiently analyze this using only lists?</p>
+    <ul class="task-list" style="margin-bottom:20px;">
+      <li>Data becomes difficult to organize — three parallel lists, hoping they never drift out of sync.</li>
+      <li>Filtering requires manual loops, every single time.</li>
+      <li>Missing values have no real representation — just gaps you have to track yourself.</li>
+      <li>Grouping "by department" means writing your own bucketing logic from scratch.</li>
+      <li>None of it scales past a toy example.</li>
+    </ul>
+
+    <div class="info-card insight">
+      <span class="info-label">Data Science Insight</span>
+      <p>Pandas provides fast, flexible, and easy-to-use data structures for working with structured, real-world data — the same relationship spreadsheets have to a page of handwritten numbers.</p>
+    </div>
+
+    <div class="step-label">From NumPy to Pandas</div>
+    <p class="body-text">You already learned the hard part — arrays, vectorization, broadcasting. Pandas is built directly on top of NumPy, and mostly just adds the things a spreadsheet has that an array doesn't.</p>
+    <div class="diagram-shell">
+      <svg class="eco-svg" viewBox="0 0 780 300" xmlns="http://www.w3.org/2000/svg">
+        <path class="eco-path flow" d="M 140 55 L 140 105" />
+        <path class="eco-path flow" d="M 140 105 L 140 155" />
+        <path class="eco-path flow" d="M 140 155 L 390 155 L 390 205" />
+        <path class="eco-path flow" d="M 640 155 L 390 155" />
+        <path class="eco-path flow" d="M 390 255 L 390 205" />
+        <g class="eco-node" data-n="1"><rect x="70" y="18" width="140" height="40" rx="10"/><text x="140" y="43" font-size="13.5" text-anchor="middle" font-weight="600">Python</text></g>
+        <g class="eco-node" data-n="2"><rect x="70" y="118" width="140" height="40" rx="10"/><text x="140" y="143" font-size="13.5" text-anchor="middle" font-weight="600">NumPy</text></g>
+        <g class="eco-node" data-n="3"><rect x="320" y="168" width="140" height="40" rx="10"/><text x="390" y="193" font-size="13.5" text-anchor="middle" font-weight="600">Pandas</text></g>
+        <g class="eco-node" data-n="4"><rect x="570" y="118" width="140" height="40" rx="10"/><text x="640" y="143" font-size="12.5" text-anchor="middle" font-weight="600">Fast Arrays</text><text x="640" y="0" font-size="0"></text></g>
+        <g class="eco-node" data-n="5"><rect x="320" y="255" width="140" height="40" rx="10"/><text x="390" y="280" font-size="13.5" text-anchor="middle" font-weight="600">Data Analysis &amp; ML</text></g>
+      </svg>
+    </div>
+    <div class="dim-table" style="margin-top:0;">
+      <table style="width:100%; border-collapse:collapse;">
+        <tr><th style="padding:10px 0; color:var(--text-faint); font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase;">NumPy gives us</th><th style="padding:10px 0; color:var(--text-faint); font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase;">Pandas adds</th></tr>
+        <tr><td style="padding:8px 0; color:var(--text-dim); font-size:13.5px;">Fast numerical arrays</td><td style="padding:8px 0; color:var(--text-dim); font-size:13.5px;">Row &amp; column labels</td></tr>
+        <tr><td style="padding:8px 0; color:var(--text-dim); font-size:13.5px;">Vectorized operations</td><td style="padding:8px 0; color:var(--text-dim); font-size:13.5px;">Mixed data types per column</td></tr>
+        <tr><td style="padding:8px 0; color:var(--text-dim); font-size:13.5px;">Efficient memory layout</td><td style="padding:8px 0; color:var(--text-dim); font-size:13.5px;">Missing-value handling, cleaning, grouping</td></tr>
+      </table>
+    </div>
+
+    <div class="step-label">List vs Array vs DataFrame</div>
+    <table class="dim-table">
+      <tr><th>Feature</th><th>Python List</th><th>NumPy Array</th><th>Pandas DataFrame</th></tr>
+      <tr><td class="dim-name">Structure</td><td>Flat, unordered container</td><td>Fixed-shape, same-type grid</td><td>Labeled table — rows &amp; columns</td></tr>
+      <tr><td class="dim-name">Data Types</td><td>Mixed, any type per element</td><td>One type for the whole array</td><td>A different type per column</td></tr>
+      <tr><td class="dim-name">Labels</td><td>None — position only</td><td>None — position only</td><td>Row index + column names</td></tr>
+      <tr><td class="dim-name">Missing Values</td><td>No built-in concept</td><td>Awkward to represent</td><td>Native <span class="mono">NaN</span> handling</td></tr>
+      <tr><td class="dim-name">Filtering</td><td>Manual loops</td><td>Boolean indexing</td><td>Boolean indexing + <span class="mono">query()</span></td></tr>
+      <tr><td class="dim-name">Real-World Fit</td><td>Small, simple data</td><td>Numeric, uniform data</td><td>Real spreadsheets &amp; CSVs</td></tr>
+    </table>
+
+    <div class="step-label">Series &amp; DataFrame — interactive anatomy</div>
+    <p class="body-text">A <strong class="emph">Series</strong> is one labeled column. A <strong class="emph">DataFrame</strong> is a table of them, sharing one index. Click each part below to see what it means.</p>
+    <div class="playground">
+      <div class="tabs">
+        <button class="tab-btn active" onclick="showAnatomy('index', this)">Index</button>
+        <button class="tab-btn" onclick="showAnatomy('header', this)">Column Names</button>
+        <button class="tab-btn" onclick="showAnatomy('row', this)">A Row</button>
+        <button class="tab-btn" onclick="showAnatomy('col', this)">A Column</button>
+        <button class="tab-btn" onclick="showAnatomy('cell', this)">A Single Cell</button>
+      </div>
+      <div id="anatomy-table"></div>
+      <p class="body-text" id="anatomy-desc" style="margin-top:14px; margin-bottom:0;"></p>
+    </div>
+
+    <div class="step-label">Meet the dataset</div>
+    <p class="body-text">Every section from here on uses the same Employee Performance dataset — on purpose, so you're never re-learning what the columns mean, only what to do with them. Here's a first, honest look — missing values and all.</p>
+    <div id="teaser-table"></div>
+    <p class="df-caption">First 6 of 15 employees shown. We formally load and inspect the full dataset in Section 2.</p>
+
+    <div class="step-label">Installing &amp; importing</div>
+    <div class="code-block">
+      <div class="code-head"><div class="left"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">terminal</span></div><div class="code-actions"><button class="code-btn" onclick="copyCode(this)">Copy</button></div></div>
+      <pre class="code-body">pip install pandas</pre>
+    </div>
+    <div class="code-block">
+      <div class="code-head"><div class="left"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">notebook cell</span></div><div class="code-actions"><button class="code-btn" onclick="copyCode(this)">Copy</button><button class="code-btn run-btn" onclick="runCode(this)">Run</button></div></div>
+      <pre class="code-body"><span class="kw">import</span> pandas <span class="kw">as</span> pd</pre>
+      <div class="code-output"><div class="out-label">Output</div><pre>(no output — pandas is now ready to use as pd)</pre></div>
+    </div>
+    <p class="body-text"><span class="mono">pd</span> is the same kind of universal convention as <span class="mono">np</span> — every course, doc page, and Stack Overflow answer assumes it.</p>
+
+    <div class="info-card mistake">
+      <span class="info-label">Common Mistake</span>
+      <p>Treating a DataFrame like "a NumPy array with extra steps." The moment you rely on position instead of labels — or forget a column can hold text right next to a column of numbers — old NumPy habits will actively work against you.</p>
+    </div>
+
+    <div class="info-card usecase">
+      <span class="info-label">Real-World Use Case</span>
+      <p>Any time you load a CSV, an Excel export, or a SQL query result into Python, it becomes a DataFrame. This is the format nearly every data analysis or ML pipeline starts from.</p>
+    </div>
+
+    <div class="step-label">Practice challenge</div>
+    <div class="quiz-block">
+      <div class="quiz-q">Quick check: what's the main thing Pandas adds on top of a NumPy array?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'qs1')">Faster mathematical operations</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'qs1')">Labels, mixed types per column, and missing-value handling</button>
+      </div>
+      <div class="quiz-feedback" id="qs1-feedback"></div>
+    </div>
+
+    <div class="step-label">Summary</div>
+    <p class="body-text">You now know why Pandas exists and what a DataFrame actually is under the hood. Next: loading this exact dataset for real, and learning to read it before touching a single row.</p>
+  </div>
+</section>
+
+<section class="chapter" id="s2">
+  <div class="wrap">
+    <div class="ch-meta"><span class="ch-eyebrow">Section 02</span><span class="ch-badge">Live inspector</span></div>
+    <h2 class="ch-title">Creating &amp; Loading Data</h2>
+
+    <div class="step-label">Why do we need this</div>
+    <p class="body-text">Before analyzing anything, data has to actually get into Pandas — either you build it yourself, or you load it from somewhere.</p>
+
+    <div class="step-label">Creating a Series</div>
+    <p class="body-text">A Series is a single labeled column. It can come from a list, a dictionary, or a NumPy array.</p>
+    <div class="code-block">
+      <div class="code-head"><div class="left"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">creating_series.py</span></div><div class="code-actions"><button class="code-btn" onclick="copyCode(this)">Copy</button><button class="code-btn run-btn" onclick="runCode(this)">Run</button></div></div>
+      <pre class="code-body">pd.Series([<span class="str">40000</span>, <span class="str">65000</span>, <span class="str">50000</span>])                      <span class="cmt"># default 0,1,2 index</span>
+pd.Series([<span class="str">40000</span>, <span class="str">65000</span>, <span class="str">50000</span>], index=[<span class="str">"Aman"</span>,<span class="str">"Riya"</span>,<span class="str">"Rahul"</span>]) <span class="cmt"># custom index</span>
+pd.Series({<span class="str">"Aman"</span>: <span class="str">40000</span>, <span class="str">"Riya"</span>: <span class="str">65000</span>})                    <span class="cmt"># dict keys become the index</span></pre>
+      <div class="code-output"><div class="out-label">Output</div><pre>Aman    40000
+Riya    65000
+Rahul   50000
+dtype: int64</pre></div>
+    </div>
+    <p class="body-text">A Series has <strong class="emph">values</strong> (the data) and an <strong class="emph">index</strong> (the labels) — and optionally a <strong class="emph">name</strong>, which becomes the column name once it joins a DataFrame.</p>
+
+    <div class="step-label">Creating a DataFrame</div>
+    <div class="code-block">
+      <div class="code-head"><div class="left"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">creating_dataframe.py</span></div><div class="code-actions"><button class="code-btn" onclick="copyCode(this)">Copy</button></div></div>
+      <pre class="code-body"><span class="cmt"># dictionary of lists — the most common way</span>
+pd.DataFrame({
+    <span class="str">"name"</span>: [<span class="str">"Aman"</span>, <span class="str">"Riya"</span>],
+    <span class="str">"salary"</span>: [<span class="str">40000</span>, <span class="str">65000</span>]
+})
+
+<span class="cmt"># list of dictionaries — one dict per row</span>
+pd.DataFrame([
+    {<span class="str">"name"</span>: <span class="str">"Aman"</span>, <span class="str">"salary"</span>: <span class="str">40000</span>},
+    {<span class="str">"name"</span>: <span class="str">"Riya"</span>, <span class="str">"salary"</span>: <span class="str">65000</span>}
+])</pre>
+    </div>
+    <p class="body-text">With a dictionary of lists: <strong class="emph">keys become column names</strong>, and each <strong class="emph">value list becomes a column's values</strong>. It's the most common pattern because it mirrors how you already think about data — one list per field.</p>
+
+    <div class="step-label">Loading real data</div>
+    <div class="code-block">
+      <div class="code-head"><div class="left"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">load_data.py</span></div><div class="code-actions"><button class="code-btn" onclick="copyCode(this)">Copy</button></div></div>
+      <pre class="code-body">df = pd.read_csv(<span class="str">"employees.csv"</span>)     <span class="cmt"># relative path — looks next to your notebook</span>
+df = pd.read_excel(<span class="str">"employees.xlsx"</span>)
+df = pd.read_json(<span class="str">"employees.json"</span>)</pre>
+    </div>
+    <p class="body-text"><span class="mono">read_csv()</span> is the one you'll use constantly. Its most useful parameters: <span class="mono">sep</span> (default is a comma, but some files use <span class="mono">;</span> or tabs), <span class="mono">header</span> (which row holds column names), and <span class="mono">encoding</span> (only needed when a file has unusual characters and the default UTF-8 fails).</p>
+
+    <div class="info-card mistake">
+      <span class="info-label">Common Mistake</span>
+      <p><span class="mono">FileNotFoundError</span> from a relative path that doesn't match where your notebook is actually running. If the file lives elsewhere, either use its full absolute path, or move the file next to your notebook.</p>
+    </div>
+
+    <div class="step-label">Inspecting before analyzing</div>
+    <p class="body-text">Never start analyzing right after loading. Read the data first — each function below answers one specific question.</p>
+    <table class="dim-table">
+      <tr><th>Function</th><th>Question it answers</th></tr>
+      <tr><td class="dim-name">.head()</td><td>What does my dataset look like?</td></tr>
+      <tr><td class="dim-name">.tail()</td><td>What do the last rows look like?</td></tr>
+      <tr><td class="dim-name">.sample()</td><td>What does a random slice look like?</td></tr>
+      <tr><td class="dim-name">.shape</td><td>How many rows and columns do I have?</td></tr>
+      <tr><td class="dim-name">.dtypes</td><td>What kind of data is stored in each column?</td></tr>
+      <tr><td class="dim-name">.info()</td><td>What's the overall structure, and where are values missing?</td></tr>
+      <tr><td class="dim-name">.describe()</td><td>What do the basic statistics look like?</td></tr>
+    </table>
+
+    <div class="step-label">Interactive: dataset inspector</div>
+    <p class="body-text">This is the real 15-employee dataset from Section 1. Click each function and watch the actual output change.</p>
+    <div class="playground">
+      <div class="tabs">
+        <button class="tab-btn active" onclick="inspect('head', this)">.head()</button>
+        <button class="tab-btn" onclick="inspect('tail', this)">.tail()</button>
+        <button class="tab-btn" onclick="inspect('sample', this)">.sample()</button>
+        <button class="tab-btn" onclick="inspect('shape', this)">.shape</button>
+        <button class="tab-btn" onclick="inspect('columns', this)">.columns</button>
+        <button class="tab-btn" onclick="inspect('index', this)">.index</button>
+        <button class="tab-btn" onclick="inspect('dtypes', this)">.dtypes</button>
+        <button class="tab-btn" onclick="inspect('info', this)">.info()</button>
+        <button class="tab-btn" onclick="inspect('describe', this)">.describe()</button>
+      </div>
+      <div id="inspect-output"></div>
+    </div>
+    <p class="body-text" style="font-size:13px; color:var(--text-faint);">Try <span class="mono">.dtypes</span> — notice <span class="mono">salary</span> shows as <span class="mono">object</span>, not a number type. That's because some entries are stored as text. Try <span class="mono">.describe()</span> next — salary doesn't even appear there, for the same reason. We fix this in Section 4.</p>
+
+    <div class="info-card insight">
+      <span class="info-label">Data Science Insight</span>
+      <p><span class="mono">.describe()</span> only summarizes numeric columns by default. If a column you expect to see is missing from the output, that's usually a dtype problem, not a bug.</p>
+    </div>
+
+    <div class="info-card tip">
+      <span class="info-label">Performance Tip</span>
+      <p><span class="mono">.head()</span> always looks clean because problems often live deeper in the file. <span class="mono">.sample()</span> gives you a more honest first impression of messy real-world data.</p>
+    </div>
+
+    <div class="step-label">Practice challenge</div>
+    <div class="quiz-block">
+      <div class="quiz-q">Quick check: a numeric-looking column is missing from <span class="mono">.describe()</span>'s output. What's the most likely cause?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'qs2')">describe() has a bug and skips random columns</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'qs2')">The column's dtype is object, not numeric — likely due to mixed text and numbers</button>
+      </div>
+      <div class="quiz-feedback" id="qs2-feedback"></div>
+    </div>
+
+    <div class="step-label">Summary</div>
+    <p class="body-text">You can now load and read any dataset before touching it. Next: pulling out exactly the rows and columns you actually need.</p>
+  </div>
+</section>
+
+<section class="chapter" id="s3">
+  <div class="wrap">
+    <div class="ch-meta"><span class="ch-eyebrow">Section 03</span><span class="ch-badge">Live filtering</span></div>
+    <h2 class="ch-title">Selecting &amp; Filtering Data</h2>
+
+    <div class="step-label">Why do we need this</div>
+    <p class="body-text">Most of the time you don't need the whole dataset — you need specific columns, specific rows, or only the records matching a condition.</p>
+
+    <div class="step-label">Selecting columns</div>
+    <div class="code-block">
+      <div class="code-head"><div class="left"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">column_selection.py</span></div><div class="code-actions"><button class="code-btn" onclick="copyCode(this)">Copy</button></div></div>
+      <pre class="code-body">df[<span class="str">"salary"</span>]                          <span class="cmt"># one column -> a Series</span>
+df[[<span class="str">"name"</span>, <span class="str">"department"</span>, <span class="str">"salary"</span>]]  <span class="cmt"># multiple columns -> a DataFrame</span></pre>
+    </div>
+    <p class="body-text">The double brackets aren't decoration — the outer <span class="mono">[]</span> is "select from df," the inner <span class="mono">[]</span> is a list of column names. One name → Series. A list of names → DataFrame, even if that list has just one item.</p>
+
+    <div class="step-label">Interactive: loc vs iloc</div>
+    <p class="body-text"><span class="mono">.loc[]</span> selects by <strong class="emph">label</strong>. <span class="mono">.iloc[]</span> selects by <strong class="emph">position</strong>. This table is indexed by employee_id, not 0-5 — switch modes and watch the same input number land on a different row.</p>
+    <div class="playground">
+      <div class="tabs">
+        <button class="tab-btn active" onclick="setLocMode('loc', this)">.loc[]</button>
+        <button class="tab-btn" onclick="setLocMode('iloc', this)">.iloc[]</button>
+      </div>
+      <div class="pg-controls">
+        <div class="pg-field"><label id="loc-row-label">Row Label (employee_id)</label><input id="loc-row-val" type="number" value="105" oninput="applyLocSelect()"></div>
+      </div>
+      <div id="loc-demo-table" style="margin-top:14px;"></div>
+      <p class="body-text" id="loc-result-text" style="margin-top:12px; margin-bottom:0; font-size:13.5px;"></p>
+    </div>
+
+    <table class="dim-table">
+      <tr><th>Feature</th><th>.loc[]</th><th>.iloc[]</th></tr>
+      <tr><td class="dim-name">Selects by</td><td>Labels</td><td>Integer positions</td></tr>
+      <tr><td class="dim-name">Rows</td><td>Index labels</td><td>0, 1, 2...</td></tr>
+      <tr><td class="dim-name">Slicing end</td><td>Usually included</td><td>Excluded</td></tr>
+    </table>
+
+    <div class="info-card mistake">
+      <span class="info-label">Common Mistake</span>
+      <p><span class="mono">df.loc[0:5]</span> includes row label 5. <span class="mono">df.iloc[0:5]</span> stops before position 5. Same-looking slice, different result — this asymmetry trips up almost everyone coming from plain Python slicing.</p>
+    </div>
+
+    <div class="step-label">Interactive: boolean filter</div>
+    <p class="body-text">Pick a column, an operator, and a value — the DataFrame filters live.</p>
+    <div class="playground">
+      <div class="pg-controls">
+        <div class="pg-field"><label>Column</label>
+          <select id="filt-col" onchange="applyFilter()">
+            <option value="experience">experience</option>
+            <option value="performance_score">performance_score</option>
+            <option value="projects_completed">projects_completed</option>
+          </select>
+        </div>
+        <div class="pg-field"><label>Operator</label>
+          <select id="filt-op" onchange="applyFilter()">
+            <option value=">">&gt;</option>
+            <option value="<">&lt;</option>
+            <option value=">=">&gt;=</option>
+            <option value="<=">&lt;=</option>
+            <option value="==">==</option>
+          </select>
+        </div>
+        <div class="pg-field"><label>Value</label><input id="filt-val" type="number" value="4" oninput="applyFilter()"></div>
+      </div>
+      <div class="code-block" style="margin-top:16px;">
+        <div class="code-head"><div class="left"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">boolean_filter</span></div></div>
+        <pre class="code-body" id="filt-code"></pre>
+      </div>
+      <div class="prop-grid" id="filt-stats"></div>
+      <div id="filt-table"></div>
+    </div>
+
+    <div class="step-label">Combining conditions</div>
+    <div class="code-block">
+      <div class="code-head"><div class="left"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">combined_conditions.py</span></div><div class="code-actions"><button class="code-btn" onclick="copyCode(this)">Copy</button></div></div>
+      <pre class="code-body">df[(df[<span class="str">"experience"</span>] > <span class="str">3</span>) & (df[<span class="str">"performance_score"</span>] > <span class="str">7</span>)]   <span class="cmt"># AND</span>
+df[(df[<span class="str">"department"</span>] == <span class="str">"Engineering"</span>) | (df[<span class="str">"department"</span>] == <span class="str">"HR"</span>)] <span class="cmt"># OR</span>
+df[~(df[<span class="str">"city"</span>] == <span class="str">"Delhi"</span>)]                                          <span class="cmt"># NOT</span></pre>
+    </div>
+    <p class="body-text">Pandas uses <span class="mono">&amp;</span>, <span class="mono">|</span>, and <span class="mono">~</span> — not Python's <span class="mono">and</span>/<span class="mono">or</span>/<span class="mono">not</span> — and every individual condition needs its own parentheses, or operator precedence breaks the whole expression.</p>
+
+    <div class="step-label">Useful filtering methods</div>
+    <div class="code-block">
+      <div class="code-head"><div class="left"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">filter_methods.py</span></div><div class="code-actions"><button class="code-btn" onclick="copyCode(this)">Copy</button></div></div>
+      <pre class="code-body">df[df[<span class="str">"department"</span>].isin([<span class="str">"Engineering"</span>, <span class="str">"Data Science"</span>])]  <span class="cmt"># match any of several values</span>
+df[df[<span class="str">"experience"</span>].between(<span class="str">2</span>, <span class="str">5</span>)]                         <span class="cmt"># inclusive range</span>
+df[df[<span class="str">"name"</span>].str.contains(<span class="str">"Verma"</span>)]                        <span class="cmt"># text search</span></pre>
+    </div>
+
+    <div class="info-card usecase">
+      <span class="info-label">Real-World Use Case</span>
+      <p><span class="mono">isin()</span> replaces long OR chains when checking against several categories. <span class="mono">between()</span> reads cleanly for numeric ranges like salary bands. <span class="mono">str.contains()</span> is the go-to for search boxes and free-text filtering.</p>
+    </div>
+
+    <div class="step-label">Practice challenge</div>
+    <div class="quiz-block">
+      <div class="quiz-q">Quick check: what does <span class="mono">df["salary"]</span> return, compared to <span class="mono">df[["salary"]]</span>?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'qs3')">A Series, vs a DataFrame with one column</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'qs3')">They return exactly the same thing</button>
+      </div>
+      <div class="quiz-feedback" id="qs3-feedback"></div>
+    </div>
+
+    <div class="step-label">Summary</div>
+    <p class="body-text">You can now pull out exactly the rows and columns you need, by label, position, or condition. Next: this dataset has missing values, duplicates, and wrong types on purpose — time to actually fix them.</p>
+  </div>
+</section>
+
+<section class="chapter" id="s4">
+  <div class="wrap">
+    <div class="ch-meta"><span class="ch-eyebrow">Section 04</span><span class="ch-badge">Live cleaning</span></div>
+    <h2 class="ch-title">Cleaning Data</h2>
+
+    <div class="step-label">Why do we need this</div>
+    <p class="body-text">Real-world data is rarely clean. This is genuinely one of the largest parts of a Data Analyst's or Data Scientist's actual job — not the modeling, this.</p>
+
+    <div class="step-label">Finding missing values</div>
+    <div class="code-block">
+      <div class="code-head"><div class="left"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">missing_values.py</span></div><div class="code-actions"><button class="code-btn" onclick="copyCode(this)">Copy</button><button class="code-btn run-btn" onclick="runCode(this)">Run</button></div></div>
+      <pre class="code-body">df.isnull().sum()   <span class="cmt"># count of missing values, per column</span></pre>
+      <div class="code-output show"><div class="out-label">Output — computed live from the real dataset</div><pre id="isnull-out"></pre></div>
+    </div>
+    <p class="body-text"><span class="mono">NaN</span> represents a missing value — <span class="mono">isnull()</span> and <span class="mono">isna()</span> are the same function under two names, both return True/False, and chaining <span class="mono">.sum()</span> counts the Trues per column.</p>
+
+    <div class="step-label">Interactive: missing value playground</div>
+    <p class="body-text">Pick a column that has real missing values, pick an action, and watch the dataset change.</p>
+    <div class="playground">
+      <div class="pg-controls">
+        <div class="pg-field"><label>Column</label>
+          <select id="mv-col" onchange="mvColChanged()">
+            <option value="salary">salary</option>
+            <option value="age">age</option>
+            <option value="department">department</option>
+            <option value="city">city</option>
+          </select>
+        </div>
+        <div class="pg-field"><label>Action</label><select id="mv-action" onchange="mvActionChanged()"></select></div>
+        <div class="pg-field" id="mv-custom-wrap" style="display:none;"><label>Custom Value</label><input id="mv-custom" type="text" value="Unknown"></div>
+        <button class="code-btn run-btn" onclick="mvApply()" style="align-self:flex-end;">Apply</button>
+        <button class="code-btn" onclick="mvReset()" style="align-self:flex-end;">Reset</button>
+      </div>
+      <div class="prop-grid" id="mv-stats"></div>
+      <div id="mv-table"></div>
+    </div>
+
+    <div class="info-card mistake">
+      <span class="info-label">Common Mistake</span>
+      <p>Dropping every row with any missing value using <span class="mono">df.dropna()</span> with no arguments. On a real dataset, one messy column can silently delete rows that were perfectly fine everywhere else. Use <span class="mono">subset=[...]</span> to target only the columns that matter.</p>
+    </div>
+
+    <div class="info-card insight">
+      <span class="info-label">Data Science Insight</span>
+      <p>Median is usually the safer fill for numeric columns like salary — a few extreme outliers can drag the mean far from what's actually typical, while the median barely moves.</p>
+    </div>
+
+    <div class="step-label">Duplicate values</div>
+    <p class="body-text">Duplicates happen — the same person entered twice, a failed script re-inserting rows, a copy-paste error. Notice something interesting below: <span class="mono">duplicated()</span> checks <em>every</em> column by default, so two rows sharing an ID but differing elsewhere won't be flagged unless you tell it which column to check.</p>
+    <div class="code-block">
+      <div class="code-head"><div class="left"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">duplicates.py</span></div><div class="code-actions"><button class="code-btn" onclick="copyCode(this)">Copy</button><button class="code-btn run-btn" onclick="runCode(this)">Run</button></div></div>
+      <pre class="code-body">df.duplicated().sum()                          <span class="cmt"># exact full-row duplicates</span>
+df.duplicated(subset=[<span class="str">"employee_id"</span>]).sum()   <span class="cmt"># duplicates by ID only</span></pre>
+      <div class="code-output show"><div class="out-label">Output — computed live</div><pre>Full-row duplicates: <span id="dup-default-out"></span>
+Duplicate employee_id: <span id="dup-subset-out"></span></pre></div>
+    </div>
+    <p class="body-text">This exact dataset has an employee entered twice under the same ID, with a couple of fields updated the second time — a realistic pattern, not a contrived one. The row below is highlighted:</p>
+    <div id="dup-highlight-table"></div>
+    <div class="code-block" style="margin-top:14px;">
+      <div class="code-head"><div class="left"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">drop_duplicates.py</span></div><div class="code-actions"><button class="code-btn" onclick="copyCode(this)">Copy</button></div></div>
+      <pre class="code-body">df.drop_duplicates(subset=[<span class="str">"employee_id"</span>], keep=<span class="str">"first"</span>)</pre>
+    </div>
+
+    <div class="step-label">Checking &amp; changing data types</div>
+    <p class="body-text">Section 2 already showed <span class="mono">salary</span> quietly reporting as <span class="mono">object</span> instead of a number. Here's the actual fix.</p>
+    <div class="code-block">
+      <div class="code-head"><div class="left"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">fixing_dtypes.py</span></div><div class="code-actions"><button class="code-btn" onclick="copyCode(this)">Copy</button></div></div>
+      <pre class="code-body">df[<span class="str">"salary"</span>] = pd.to_numeric(df[<span class="str">"salary"</span>], errors=<span class="str">"coerce"</span>)   <span class="cmt"># bad values become NaN, not a crash</span>
+df[<span class="str">"joining_date"</span>] = pd.to_datetime(df[<span class="str">"joining_date"</span>])           <span class="cmt"># text -> real dates</span></pre>
+    </div>
+
+    <div class="info-card mistake">
+      <span class="info-label">Common Mistake</span>
+      <p><span class="mono">df["age"].astype(int)</span> crashes the moment it hits a missing value — <span class="mono">NaN</span> can't become an integer. <span class="mono">pd.to_numeric(..., errors="coerce")</span> converts what it can and turns the rest into <span class="mono">NaN</span> instead of stopping your whole script.</p>
+    </div>
+
+    <div class="step-label">Renaming columns</div>
+    <div class="code-block">
+      <div class="code-head"><div class="left"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">renaming.py</span></div><div class="code-actions"><button class="code-btn" onclick="copyCode(this)">Copy</button></div></div>
+      <pre class="code-body">df.rename(columns={<span class="str">"emp_name"</span>: <span class="str">"employee_name"</span>}, inplace=<span class="kw">True</span>)
+
+<span class="cmt"># clean every column name in one line</span>
+df.columns = df.columns.str.strip().str.lower().str.replace(<span class="str">" "</span>, <span class="str">"_"</span>)</pre>
+    </div>
+    <p class="body-text"><span class="mono">inplace=True</span> modifies <span class="mono">df</span> directly. Without it, <span class="mono">rename()</span> returns a new DataFrame and leaves the original untouched.</p>
+
+    <div class="step-label">Cleaning inconsistent text</div>
+    <div class="code-block">
+      <div class="code-head"><div class="left"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">clean_text.py</span></div><div class="code-actions"><button class="code-btn" onclick="copyCode(this)">Copy</button><button class="code-btn run-btn" onclick="runCode(this)">Run</button></div></div>
+      <pre class="code-body">df[<span class="str">"department"</span>] = df[<span class="str">"department"</span>].str.strip().str.title()
+<span class="fn">print</span>(df[<span class="str">"department"</span>].unique())</pre>
+      <div class="code-output show"><div class="out-label">Output — computed live from the real messy values</div><pre id="clean-text-out"></pre></div>
+    </div>
+
+    <div class="info-card mistake">
+      <span class="info-label">Common Mistake</span>
+      <p>Look closely at the output above — <span class="mono">.str.title()</span> can mangle acronyms. "HR" becomes "Hr", not "HR". For columns with known acronyms, a manual <span class="mono">.replace()</span> or <span class="mono">.map()</span> is safer than blindly calling <span class="mono">.title()</span>.</p>
+    </div>
+
+    <div class="step-label">Practice challenge</div>
+    <div class="quiz-block">
+      <div class="quiz-q">Quick check: why is <span class="mono">pd.to_numeric(df["salary"], errors="coerce")</span> usually safer than <span class="mono">df["salary"].astype(float)</span> on messy data?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'qs4')">astype() is deprecated and no longer works</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'qs4')">to_numeric with coerce turns bad values into NaN instead of crashing the whole operation</button>
+      </div>
+      <div class="quiz-feedback" id="qs4-feedback"></div>
+    </div>
+
+    <div class="step-label">Summary</div>
+    <p class="body-text">This dataset is finally trustworthy. Next: using it to build the features you'll actually need for analysis.</p>
+  </div>
+</section>
+
+<section class="chapter" id="s5">
+  <div class="wrap">
+    <div class="ch-meta"><span class="ch-eyebrow">Section 05</span><span class="ch-badge">Live playground</span></div>
+    <h2 class="ch-title">Modifying Data &amp; Creating New Columns</h2>
+
+    <div class="step-label">Why do we need this</div>
+    <p class="body-text">Analysis isn't only reading existing columns — often you're creating new information from what's already there. This is exactly what "feature engineering" means in Machine Learning: existing features, transformed into new ones.</p>
+
+    <div class="step-label">Creating &amp; modifying columns directly</div>
+    <div class="code-block">
+      <div class="code-head"><div class="left"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">direct_columns.py</span></div><div class="code-actions"><button class="code-btn" onclick="copyCode(this)">Copy</button></div></div>
+      <pre class="code-body">df[<span class="str">"annual_salary"</span>] = df[<span class="str">"monthly_salary"</span>] * <span class="str">12</span>   <span class="cmt"># new column</span>
+df[<span class="str">"salary"</span>] = df[<span class="str">"salary"</span>] * <span class="str">1.10</span>              <span class="cmt"># modify an existing one</span></pre>
+    </div>
+    <p class="body-text">Both are vectorized — same instinct as NumPy. No loop needed for straightforward math.</p>
+
+    <div class="step-label">The apply() function</div>
+    <p class="body-text"><span class="mono">apply()</span> runs a custom function against every value in a column — for logic that's too specific for simple arithmetic.</p>
+    <div class="code-block">
+      <div class="code-head"><div class="left"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">apply_function.py</span></div><div class="code-actions"><button class="code-btn" onclick="copyCode(this)">Copy</button></div></div>
+      <pre class="code-body"><span class="kw">def</span> performance_category(score):
+    <span class="kw">if</span> score >= <span class="str">8</span>:
+        <span class="kw">return</span> <span class="str">"Excellent"</span>
+    <span class="kw">elif</span> score >= <span class="str">6</span>:
+        <span class="kw">return</span> <span class="str">"Good"</span>
+    <span class="kw">else</span>:
+        <span class="kw">return</span> <span class="str">"Needs Improvement"</span>
+
+df[<span class="str">"performance_category"</span>] = df[<span class="str">"performance_score"</span>].apply(performance_category)</pre>
+    </div>
+    <p class="body-text">Value → function → returned category → new column. That's the whole flow, one row at a time under the hood, but written once.</p>
+
+    <div class="step-label">Lambda functions</div>
+    <div class="code-block">
+      <div class="code-head"><div class="left"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">lambda_functions.py</span></div><div class="code-actions"><button class="code-btn" onclick="copyCode(this)">Copy</button></div></div>
+      <pre class="code-body">df[<span class="str">"salary_level"</span>] = df[<span class="str">"salary"</span>].apply(
+    <span class="kw">lambda</span> salary: <span class="str">"High"</span> <span class="kw">if</span> salary > <span class="str">70000</span> <span class="kw">else</span> <span class="str">"Normal"</span>
+)</pre>
+    </div>
+    <p class="body-text">A lambda is a small, throwaway function written inline — useful when the logic is a one-liner and doesn't deserve its own named <span class="mono">def</span> block.</p>
+
+    <div class="step-label">The map() function</div>
+    <div class="code-block">
+      <div class="code-head"><div class="left"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">map_function.py</span></div><div class="code-actions"><button class="code-btn" onclick="copyCode(this)">Copy</button></div></div>
+      <pre class="code-body">department_codes = {<span class="str">"Engineering"</span>: <span class="str">"ENG"</span>, <span class="str">"Marketing"</span>: <span class="str">"MKT"</span>, <span class="str">"Finance"</span>: <span class="str">"FIN"</span>}
+df[<span class="str">"department_code"</span>] = df[<span class="str">"department"</span>].map(department_codes)</pre>
+    </div>
+    <p class="body-text">Use <span class="mono">map()</span> for simple value-to-value substitution — a dictionary lookup. Use <span class="mono">apply()</span> when the logic needs a real function with branching. That's the whole decision.</p>
+
+    <div class="step-label">Interactive: feature engineering playground</div>
+    <p class="body-text">Pick a new column to create — the transformation and the resulting column (highlighted) both update live.</p>
+    <div class="playground">
+      <div class="tabs">
+        <button class="tab-btn active" onclick="feCreate('annual_salary', this)">Annual Salary</button>
+        <button class="tab-btn" onclick="feCreate('salary_category', this)">Salary Category</button>
+        <button class="tab-btn" onclick="feCreate('experience_level', this)">Experience Level</button>
+        <button class="tab-btn" onclick="feCreate('performance_category', this)">Performance Category</button>
+        <button class="tab-btn" onclick="feCreate('bonus_amount', this)">Bonus Amount</button>
+      </div>
+      <div class="code-block" style="margin-top:14px;">
+        <div class="code-head"><div class="left"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">feature_engineering</span></div></div>
+        <pre class="code-body" id="fe-code"></pre>
+      </div>
+      <div id="fe-table"></div>
+    </div>
+    <p class="body-text" style="font-size:13px; color:var(--text-faint);">Salary values here are treated as already cleaned, the way Section 4 left them.</p>
+
+    <div class="info-card mistake">
+      <span class="info-label">Common Mistake</span>
+      <p>A custom function used with <span class="mono">apply()</span> that forgets to <span class="mono">return</span> a value — it just computes and stops. The new column doesn't error, it just fills up with <span class="mono">None</span> for every row, silently.</p>
+    </div>
+
+    <div class="info-card tip">
+      <span class="info-label">Performance Tip</span>
+      <p><span class="mono">apply()</span> is flexible but slower than direct vectorized math — same lesson as NumPy. Reach for <span class="mono">df["col"] * 2</span> style operations first, and save <span class="mono">apply()</span>/lambda for logic that genuinely needs branching.</p>
+    </div>
+
+    <div class="step-label">Practice challenge</div>
+    <div class="quiz-block">
+      <div class="quiz-q">Quick check: you want to replace department names with short codes using a fixed dictionary. Which is the right tool?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'qs5')">map() — simple value-to-value substitution</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'qs5')">apply() with a custom function</button>
+      </div>
+      <div class="quiz-feedback" id="qs5-feedback"></div>
+    </div>
+
+    <div class="step-label">Summary</div>
+    <p class="body-text">You can now shape existing data into exactly the features you need. Next: finding the best, worst, highest, and lowest — sorting and ranking.</p>
+  </div>
+</section>
+
+<section class="chapter" id="s6">
+  <div class="wrap">
+    <div class="ch-meta"><span class="ch-eyebrow">Section 06</span><span class="ch-badge">Live ranking</span></div>
+    <h2 class="ch-title">Sorting &amp; Ranking</h2>
+
+    <div class="step-label">Why do we need this</div>
+    <p class="body-text">After analyzing data, you usually want the extremes — the highest, lowest, best, or worst performing records, not the whole table in whatever order it happened to load in.</p>
+
+    <div class="step-label">Sorting values</div>
+    <div class="code-block">
+      <div class="code-head"><div class="left"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">sorting.py</span></div><div class="code-actions"><button class="code-btn" onclick="copyCode(this)">Copy</button></div></div>
+      <pre class="code-body">df.sort_values(by=<span class="str">"salary"</span>)                        <span class="cmt"># ascending, default</span>
+df.sort_values(by=<span class="str">"salary"</span>, ascending=<span class="kw">False</span>)       <span class="cmt"># descending</span>
+df.sort_values(
+    by=[<span class="str">"department"</span>, <span class="str">"salary"</span>],
+    ascending=[<span class="kw">True</span>, <span class="kw">False</span>]
+)  <span class="cmt"># department A-Z, salary high-to-low within each</span></pre>
+    </div>
+    <p class="body-text">With multiple columns, the first is the <strong class="emph">primary sort</strong>, the second only breaks ties within it — department groups stay alphabetical, and only within each department does salary sort high to low.</p>
+
+    <div class="info-card mistake">
+      <span class="info-label">Common Mistake</span>
+      <p><span class="mono">sort_values()</span> returns a <strong class="emph">new</strong> DataFrame by default — the original stays untouched unless you pass <span class="mono">inplace=True</span> or reassign it: <span class="mono">df = df.sort_values(...)</span>. Same rule as <span class="mono">rename()</span> back in Section 4.</p>
+    </div>
+
+    <div class="step-label">Ranking</div>
+    <div class="code-block">
+      <div class="code-head"><div class="left"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">ranking.py</span></div><div class="code-actions"><button class="code-btn" onclick="copyCode(this)">Copy</button></div></div>
+      <pre class="code-body">df[<span class="str">"salary_rank"</span>] = df[<span class="str">"salary"</span>].rank(ascending=<span class="kw">False</span>)</pre>
+    </div>
+    <p class="body-text">Tied values share a rank by default — two employees tied for 2nd both get rank 2.5, splitting 2 and 3 between them. <span class="mono">method="min"</span> gives both rank 2 instead; <span class="mono">method="dense"</span> avoids gaps in the rank sequence entirely. Default is fine for most cases.</p>
+
+    <div class="step-label">Top &amp; bottom records</div>
+    <div class="code-block">
+      <div class="code-head"><div class="left"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">top_bottom.py</span></div><div class="code-actions"><button class="code-btn" onclick="copyCode(this)">Copy</button></div></div>
+      <pre class="code-body">df.nlargest(<span class="str">5</span>, <span class="str">"salary"</span>)              <span class="cmt"># top 5, no full sort needed</span>
+df.nsmallest(<span class="str">5</span>, <span class="str">"performance_score"</span>)  <span class="cmt"># bottom 5</span></pre>
+    </div>
+
+    <div class="step-label">Interactive: ranking board</div>
+    <p class="body-text">Pick a column and a mode — sorted, top/bottom 5, or a full rank column.</p>
+    <div class="playground">
+      <div class="pg-controls">
+        <div class="pg-field"><label>Column</label>
+          <select id="rank-col" onchange="applyRanking()">
+            <option value="salary">salary</option>
+            <option value="performance_score">performance_score</option>
+            <option value="experience">experience</option>
+            <option value="projects_completed">projects_completed</option>
+          </select>
+        </div>
+        <div class="pg-field"><label>Mode</label>
+          <select id="rank-mode" onchange="applyRanking()">
+            <option value="desc">Highest First</option>
+            <option value="asc">Lowest First</option>
+            <option value="top5">Top 5</option>
+            <option value="bottom5">Bottom 5</option>
+            <option value="rank">Rank Employees</option>
+          </select>
+        </div>
+      </div>
+      <div class="code-block" style="margin-top:14px;">
+        <div class="code-head"><div class="left"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">ranking</span></div></div>
+        <pre class="code-body" id="rank-code"></pre>
+      </div>
+      <div id="rank-table"></div>
+    </div>
+    <p class="body-text" style="font-size:13px; color:var(--text-faint);">Salary is treated as already cleaned here, same as Section 5.</p>
+
+    <div class="info-card tip">
+      <span class="info-label">Performance Tip</span>
+      <p><span class="mono">nlargest()</span>/<span class="mono">nsmallest()</span> are faster than <span class="mono">sort_values().head()</span> on big datasets — they never sort the rows you don't need.</p>
+    </div>
+
+    <div class="info-card insight">
+      <span class="info-label">Data Science Insight</span>
+      <p>Before ranking anything, decide upfront whether higher is better. Performance score, higher is better. A "days late" column, lower is better. Getting this backwards silently flips your entire leaderboard.</p>
+    </div>
+
+    <div class="step-label">Practice challenge</div>
+    <div class="quiz-block">
+      <div class="quiz-q">Quick check: two employees are tied for the 2nd highest salary. With the default rank(), what rank does each get?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'qs6')">Both get rank 2</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'qs6')">Both get 2.5 — the average of the ranks they'd otherwise split</button>
+      </div>
+      <div class="quiz-feedback" id="qs6-feedback"></div>
+    </div>
+
+    <div class="step-label">Summary</div>
+    <p class="body-text">You can now surface the best and worst records instantly. Last stop: summarizing this entire dataset by group — the single most useful skill in this course.</p>
+  </div>
+</section>
+
+<section class="chapter" id="s7">
+  <div class="wrap">
+    <div class="ch-meta"><span class="ch-eyebrow">Section 07</span><span class="ch-badge">The big one</span></div>
+    <h2 class="ch-title">Grouping &amp; Aggregation</h2>
+
+    <div class="step-label">Why do we need this</div>
+    <p class="body-text">"What's the average salary of every department?" You could filter each department manually and average it by hand — five departments, five repeated blocks of code. Or you could ask Pandas once.</p>
+
+    <div class="step-label">Split, apply, combine</div>
+    <p class="body-text"><span class="mono">groupby()</span> works in three stages: split the data into groups, apply a calculation to each group separately, then combine the results back into one table.</p>
+    <div class="sac-flow" id="sac-flow">
+      <div class="sac-stage"><div class="sac-icon">&#9986;&#65039;</div><div class="sac-label">Split</div><div class="sac-sub">by group</div></div>
+      <span class="sac-arrow">&rarr;</span>
+      <div class="sac-stage"><div class="sac-icon">&#9881;&#65039;</div><div class="sac-label">Apply</div><div class="sac-sub" id="sac-apply-label">mean()</div></div>
+      <span class="sac-arrow">&rarr;</span>
+      <div class="sac-stage"><div class="sac-icon">&#129513;</div><div class="sac-label">Combine</div><div class="sac-sub">into a table</div></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-head"><div class="left"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">basic_groupby.py</span></div><div class="code-actions"><button class="code-btn" onclick="copyCode(this)">Copy</button></div></div>
+      <pre class="code-body">df.groupby(<span class="str">"department"</span>)[<span class="str">"salary"</span>].mean()</pre>
+    </div>
+
+    <div class="step-label">Common aggregation functions</div>
+    <div class="code-block">
+      <div class="code-head"><div class="left"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">aggregations.py</span></div><div class="code-actions"><button class="code-btn" onclick="copyCode(this)">Copy</button></div></div>
+      <pre class="code-body">.sum(), .mean(), .median(), .min(), .max(), .count(), .size(), .std()</pre>
+    </div>
+    <p class="body-text"><span class="mono">count()</span> and <span class="mono">size()</span> look interchangeable until missing values show up: <span class="mono">size()</span> counts every row in the group, <span class="mono">count()</span> only counts the non-null ones. Watch the difference with our real, still-slightly-messy salary column:</p>
+    <div id="count-size-table"></div>
+
+    <div class="step-label">Grouping multiple columns &amp; aggregating multiple columns</div>
+    <div class="code-block">
+      <div class="code-head"><div class="left"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">multi_group.py</span></div><div class="code-actions"><button class="code-btn" onclick="copyCode(this)">Copy</button></div></div>
+      <pre class="code-body">df.groupby([<span class="str">"department"</span>, <span class="str">"city"</span>])[<span class="str">"salary"</span>].mean()   <span class="cmt"># hierarchical grouping</span>
+
+df.groupby(<span class="str">"department"</span>)[[<span class="str">"salary"</span>, <span class="str">"performance_score"</span>]].mean()  <span class="cmt"># multiple columns at once</span></pre>
+    </div>
+
+    <div class="step-label">Multiple aggregations with agg()</div>
+    <div class="code-block">
+      <div class="code-head"><div class="left"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">agg_function.py</span></div><div class="code-actions"><button class="code-btn" onclick="copyCode(this)">Copy</button></div></div>
+      <pre class="code-body">df.groupby(<span class="str">"department"</span>).agg({
+    <span class="str">"salary"</span>: [<span class="str">"mean"</span>, <span class="str">"max"</span>],
+    <span class="str">"performance_score"</span>: <span class="str">"mean"</span>,
+    <span class="str">"employee_id"</span>: <span class="str">"count"</span>
+})</pre>
+    </div>
+    <p class="body-text">One group, several calculations at once, combined into a single summary table.</p>
+
+    <div class="step-label">Named aggregation</div>
+    <div class="code-block">
+      <div class="code-head"><div class="left"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">named_agg.py</span></div><div class="code-actions"><button class="code-btn" onclick="copyCode(this)">Copy</button></div></div>
+      <pre class="code-body">department_summary = df.groupby(<span class="str">"department"</span>).agg(
+    average_salary=(<span class="str">"salary"</span>, <span class="str">"mean"</span>),
+    highest_salary=(<span class="str">"salary"</span>, <span class="str">"max"</span>),
+    employee_count=(<span class="str">"employee_id"</span>, <span class="str">"count"</span>)
+)</pre>
+    </div>
+    <p class="body-text">Clean, readable column names in the output instead of the nested multi-level headers <span class="mono">agg()</span> normally produces.</p>
+
+    <div class="step-label">Resetting the index</div>
+    <div class="code-block">
+      <div class="code-head"><div class="left"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">reset_index.py</span></div><div class="code-actions"><button class="code-btn" onclick="copyCode(this)">Copy</button></div></div>
+      <pre class="code-body">department_summary.reset_index()</pre>
+    </div>
+    <p class="body-text">After grouping, the group column becomes the index, not a regular column. <span class="mono">reset_index()</span> turns it back into a normal column — handy the moment you want to sort, filter, or merge on it again.</p>
+
+    <div class="step-label">Interactive: groupby builder</div>
+    <p class="body-text">Pick what to group by, what to measure, and how to summarize it. Watch split, apply, and combine happen above, in order, every time.</p>
+    <div class="playground">
+      <div class="pg-controls">
+        <div class="pg-field"><label>Group By</label>
+          <select id="gb-groupby" onchange="applyGroupBy()">
+            <option value="department">Department</option>
+            <option value="city">City</option>
+            <option value="experience_level">Experience Level</option>
+          </select>
+        </div>
+        <div class="pg-field"><label>Column</label>
+          <select id="gb-col" onchange="applyGroupBy()">
+            <option value="salary">Salary</option>
+            <option value="performance_score">Performance Score</option>
+            <option value="projects_completed">Projects Completed</option>
+          </select>
+        </div>
+        <div class="pg-field"><label>Aggregation</label>
+          <select id="gb-agg" onchange="applyGroupBy()">
+            <option value="mean">Mean</option>
+            <option value="sum">Sum</option>
+            <option value="median">Median</option>
+            <option value="min">Minimum</option>
+            <option value="max">Maximum</option>
+            <option value="count">Count</option>
+          </select>
+        </div>
+      </div>
+      <div class="code-block" style="margin-top:16px;">
+        <div class="code-head"><div class="left"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">groupby_result</span></div></div>
+        <pre class="code-body" id="gb-code"></pre>
+      </div>
+      <div id="gb-table"></div>
+    </div>
+    <p class="body-text" style="font-size:13px; color:var(--text-faint);">Department names shown here use the cleaned version from Section 4. "Experience Level" is derived live, the same way Section 5 built it.</p>
+
+    <div class="info-card mistake">
+      <span class="info-label">Common Mistake</span>
+      <p>Forgetting that grouped columns become the <strong class="emph">index</strong>, not regular columns — then being confused when <span class="mono">department_summary["department"]</span> throws a KeyError. Reach for <span class="mono">reset_index()</span> the moment you need to treat it like a column again.</p>
+    </div>
+
+    <div class="info-card insight">
+      <span class="info-label">Data Science Insight</span>
+      <p><span class="mono">groupby()</span> is the single most-used Pandas operation in real analysis work. Almost every business question — "which region," "which category," "which segment" — is a groupby in disguise.</p>
+    </div>
+
+    <div class="step-label">Practice challenge</div>
+    <div class="quiz-block">
+      <div class="quiz-q">Quick check: a department has 5 employees, but one is missing a salary value. What does <span class="mono">size()</span> return for that group, versus <span class="mono">count()</span> on the salary column?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'qs7')">size() returns 5, salary.count() returns 4</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'qs7')">Both return 5 — they're the same thing</button>
+      </div>
+      <div class="quiz-feedback" id="qs7-feedback"></div>
+    </div>
+
+    <div class="step-label">Summary</div>
+    <p class="body-text">Load, inspect, select, filter, clean, engineer, sort, and now summarize by group — that's the complete core Pandas workflow. What's left is putting all seven sections together on this exact dataset, start to finish, plus a bank of practice questions to test yourself against.</p>
+  </div>
+</section>
+
+<section class="chapter" id="workflow">
+  <div class="wrap">
+    <div class="ch-meta"><span class="ch-eyebrow">Case Study</span><span class="ch-badge">Live answers</span></div>
+    <h2 class="ch-title">The Full Workflow, Start to Finish</h2>
+    <p class="body-text">Same dataset, one continuous pipeline — every step is something you already built in this course, just chained together the way a real analysis actually looks.</p>
+
+    <div class="code-block">
+      <div class="code-head"><div class="left"><div class="code-dots"><span></span><span></span><span></span></div><span class="code-lang">full_workflow.py</span></div><div class="code-actions"><button class="code-btn" onclick="copyCode(this)">Copy</button></div></div>
+      <pre class="code-body"><span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+<span class="cmt"># 1. Load</span>
+df = pd.read_csv(<span class="str">"employees.csv"</span>)
+
+<span class="cmt"># 2. Inspect</span>
+df.info()
+df.describe()
+
+<span class="cmt"># 3. Select the columns that matter for this analysis</span>
+df = df[[<span class="str">"employee_id"</span>, <span class="str">"name"</span>, <span class="str">"department"</span>, <span class="str">"city"</span>, <span class="str">"salary"</span>,
+         <span class="str">"experience"</span>, <span class="str">"performance_score"</span>, <span class="str">"projects_completed"</span>]]
+
+<span class="cmt"># 4. Filter out obviously irrelevant rows, if any</span>
+df = df[df[<span class="str">"employee_id"</span>].notna()]
+
+<span class="cmt"># 5-6. Find and fill missing values</span>
+df[<span class="str">"salary"</span>] = pd.to_numeric(df[<span class="str">"salary"</span>], errors=<span class="str">"coerce"</span>)
+df[<span class="str">"salary"</span>] = df[<span class="str">"salary"</span>].fillna(df[<span class="str">"salary"</span>].median())
+df[<span class="str">"age"</span>] = df[<span class="str">"age"</span>].fillna(df[<span class="str">"age"</span>].median())
+
+<span class="cmt"># 7. Remove duplicates</span>
+df = df.drop_duplicates(subset=[<span class="str">"employee_id"</span>], keep=<span class="str">"first"</span>)
+
+<span class="cmt"># 8. Correct data types</span>
+df[<span class="str">"joining_date"</span>] = pd.to_datetime(df[<span class="str">"joining_date"</span>])
+
+<span class="cmt"># 9. Clean up column names and category text</span>
+df.columns = df.columns.str.strip().str.lower().str.replace(<span class="str">" "</span>, <span class="str">"_"</span>)
+df[<span class="str">"department"</span>] = df[<span class="str">"department"</span>].str.strip().str.title()
+
+<span class="cmt"># 10. Create new features</span>
+df[<span class="str">"experience_level"</span>] = df[<span class="str">"experience"</span>].apply(
+    <span class="kw">lambda</span> e: <span class="str">"Senior"</span> <span class="kw">if</span> e >= <span class="str">5</span> <span class="kw">else</span> (<span class="str">"Mid"</span> <span class="kw">if</span> e >= <span class="str">2</span> <span class="kw">else</span> <span class="str">"Junior"</span>)
+)
+
+<span class="cmt"># 11. Sort</span>
+df = df.sort_values(by=<span class="str">"performance_score"</span>, ascending=<span class="kw">False</span>)
+
+<span class="cmt"># 12. Group and summarize</span>
+department_summary = df.groupby(<span class="str">"department"</span>).agg(
+    average_salary=(<span class="str">"salary"</span>, <span class="str">"mean"</span>),
+    average_performance=(<span class="str">"performance_score"</span>, <span class="str">"mean"</span>),
+    employee_count=(<span class="str">"employee_id"</span>, <span class="str">"count"</span>)
+).reset_index()</pre>
+    </div>
+
+    <div class="step-label">Business insights — computed live from this course's real dataset</div>
+    <div class="insight-qa">
+      <div class="qa-item"><div class="qa-q">Which department has the highest average salary?</div><div class="qa-a" id="qa-1"></div></div>
+      <div class="qa-item"><div class="qa-q">Which department has the highest average performance?</div><div class="qa-a" id="qa-2"></div></div>
+      <div class="qa-item"><div class="qa-q">Which city has the most employees?</div><div class="qa-a" id="qa-3"></div></div>
+      <div class="qa-item">
+        <div class="qa-q">Who are the top five performers?</div>
+        <div id="qa-4-table"></div>
+      </div>
+      <div class="qa-item"><div class="qa-q">Do more experienced employees complete more projects?</div><div class="qa-a" id="qa-5"></div></div>
+      <div class="qa-item">
+        <div class="qa-q">How many employees are in every department?</div>
+        <div id="qa-6-table"></div>
+      </div>
+    </div>
+    <p class="body-text" style="font-size:13px; color:var(--text-faint);">Every answer above is computed live from this exact 15-employee dataset — not scripted text. Refresh the page and re-derive it yourself against the code above.</p>
+  </div>
+</section>
+
+<section class="chapter" id="practice">
+  <div class="wrap">
+    <div class="ch-meta"><span class="ch-eyebrow">Practice</span><span class="ch-badge">20 questions</span></div>
+    <h2 class="ch-title">Practice Questions</h2>
+    <p class="body-text">Twenty questions, spanning everything from Section 1 to Section 7. Instant feedback, every time.</p>
+
+    <div class="quiz-block"><span class="quiz-tag">Predict the Output</span>
+      <div class="quiz-q">What does this print?</div>
+      <pre class="quiz-code">s = pd.Series([<span class="str">10</span>, <span class="str">20</span>, <span class="str">30</span>])
+<span class="fn">print</span>(s[<span class="str">1</span>])</pre>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'p1')">20</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'p1')">30</button>
+      </div>
+      <div class="quiz-feedback" id="p1-feedback"></div>
+    </div>
+
+    <div class="quiz-block"><span class="quiz-tag">Predict the Output</span>
+      <div class="quiz-q">What does <span class="mono">df[["salary"]]</span> return?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'p2')">A DataFrame with one column</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'p2')">A Series</button>
+      </div>
+      <div class="quiz-feedback" id="p2-feedback"></div>
+    </div>
+
+    <div class="quiz-block"><span class="quiz-tag">Predict the Output</span>
+      <div class="quiz-q">On a DataFrame with the default index, how many rows does <span class="mono">df.loc[0:3]</span> return?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'p3')">4 rows (0, 1, 2, 3)</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'p3')">3 rows (0, 1, 2)</button>
+      </div>
+      <div class="quiz-feedback" id="p3-feedback"></div>
+    </div>
+
+    <div class="quiz-block"><span class="quiz-tag">Select the Correct Function</span>
+      <div class="quiz-q">Which shows the number of missing values per column?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'p4')">df.isnull().sum()</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'p4')">df.dropna().count()</button>
+      </div>
+      <div class="quiz-feedback" id="p4-feedback"></div>
+    </div>
+
+    <div class="quiz-block"><span class="quiz-tag">Select the Correct Function</span>
+      <div class="quiz-q">Which fills missing values instead of removing them?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'p5')">fillna()</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'p5')">dropna()</button>
+      </div>
+      <div class="quiz-feedback" id="p5-feedback"></div>
+    </div>
+
+    <div class="quiz-block"><span class="quiz-tag">Select the Correct Function</span>
+      <div class="quiz-q">Best tool for a simple dictionary-based value swap on a whole column?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'p6')">map()</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'p6')">apply()</button>
+      </div>
+      <div class="quiz-feedback" id="p6-feedback"></div>
+    </div>
+
+    <div class="quiz-block"><span class="quiz-tag">Find the Error</span>
+      <div class="quiz-q">What's wrong here?</div>
+      <pre class="quiz-code">df[df[<span class="str">"salary"</span>] > <span class="str">50000</span> <span class="kw">and</span> df[<span class="str">"experience"</span>] > <span class="str">3</span>]</pre>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'p7')">Should use & with parentheses around each condition</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'p7')">Nothing wrong, this works fine</button>
+      </div>
+      <div class="quiz-feedback" id="p7-feedback"></div>
+    </div>
+
+    <div class="quiz-block"><span class="quiz-tag">Find the Error</span>
+      <div class="quiz-q">This crashes when age has missing values. What's the fix?</div>
+      <pre class="quiz-code">df[<span class="str">"age"</span>] = df[<span class="str">"age"</span>].astype(<span class="fn">int</span>)</pre>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'p8')">Use pd.to_numeric(df["age"], errors="coerce") instead</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'p8')">Add astype(int, errors="ignore")</button>
+      </div>
+      <div class="quiz-feedback" id="p8-feedback"></div>
+    </div>
+
+    <div class="quiz-block"><span class="quiz-tag">Find the Error</span>
+      <div class="quiz-q">This produces a column full of None. Why?</div>
+      <pre class="quiz-code"><span class="kw">def</span> get_level(exp):
+    <span class="kw">if</span> exp >= <span class="str">5</span>:
+        <span class="str">"Senior"</span>
+    <span class="kw">else</span>:
+        <span class="str">"Junior"</span>
+df[<span class="str">"level"</span>] = df[<span class="str">"experience"</span>].apply(get_level)</pre>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'p9')">Missing return statements — every row becomes None</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'p9')">apply() can't be used with if/else logic</button>
+      </div>
+      <div class="quiz-feedback" id="p9-feedback"></div>
+    </div>
+
+    <div class="quiz-block"><span class="quiz-tag">Complete the Code</span>
+      <div class="quiz-q">Fill in the blank to match either category:</div>
+      <pre class="quiz-code">df[df[<span class="str">"department"</span>].____([<span class="str">"Engineering"</span>, <span class="str">"Data Science"</span>])]</pre>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'p10')">isin</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'p10')">between</button>
+      </div>
+      <div class="quiz-feedback" id="p10-feedback"></div>
+    </div>
+
+    <div class="quiz-block"><span class="quiz-tag">Complete the Code</span>
+      <div class="quiz-q">Fill in the blank to get average salary per department:</div>
+      <pre class="quiz-code">df.____(<span class="str">"department"</span>)[<span class="str">"salary"</span>].mean()</pre>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'p11')">groupby</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'p11')">sort_values</button>
+      </div>
+      <div class="quiz-feedback" id="p11-feedback"></div>
+    </div>
+
+    <div class="quiz-block"><span class="quiz-tag">loc vs iloc</span>
+      <div class="quiz-q"><span class="mono">df.iloc[0:5]</span> returns how many rows?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'p12')">5 rows, positions 0-4</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'p12')">6 rows, positions 0-5</button>
+      </div>
+      <div class="quiz-feedback" id="p12-feedback"></div>
+    </div>
+
+    <div class="quiz-block"><span class="quiz-tag">loc vs iloc</span>
+      <div class="quiz-q">A DataFrame is indexed by employee_id (starting at 101). What does <span class="mono">df.iloc[0]</span> return?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'p13')">The first row physically, regardless of its label</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'p13')">The row labeled 0</button>
+      </div>
+      <div class="quiz-feedback" id="p13-feedback"></div>
+    </div>
+
+    <div class="quiz-block"><span class="quiz-tag">Boolean Filtering</span>
+      <div class="quiz-q">What does <span class="mono">~</span> do in <span class="mono">df[~(df["city"] == "Delhi")]</span>?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'p14')">Negates the condition — keeps everyone NOT in Delhi</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'p14')">Filters for exact matches only</button>
+      </div>
+      <div class="quiz-feedback" id="p14-feedback"></div>
+    </div>
+
+    <div class="quiz-block"><span class="quiz-tag">Missing Values</span>
+      <div class="quiz-q">Why can <span class="mono">dropna()</span> with no arguments be dangerous on a large dataset?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'p15')">One messy column can silently delete otherwise-good rows</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'p15')">It only works on numeric columns</button>
+      </div>
+      <div class="quiz-feedback" id="p15-feedback"></div>
+    </div>
+
+    <div class="quiz-block"><span class="quiz-tag">Duplicate Removal</span>
+      <div class="quiz-q">By default, what does <span class="mono">df.duplicated()</span> check?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'p16')">Every column — a row must match completely</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'p16')">Only the index</button>
+      </div>
+      <div class="quiz-feedback" id="p16-feedback"></div>
+    </div>
+
+    <div class="quiz-block"><span class="quiz-tag">Data Type Conversion</span>
+      <div class="quiz-q">Why is <span class="mono">pd.to_numeric(col, errors="coerce")</span> often safer than <span class="mono">astype(float)</span>?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'p17')">Bad values become NaN instead of crashing the whole operation</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'p17')">It runs faster than astype()</button>
+      </div>
+      <div class="quiz-feedback" id="p17-feedback"></div>
+    </div>
+
+    <div class="quiz-block"><span class="quiz-tag">apply / Lambda / map</span>
+      <div class="quiz-q">Which is a valid lambda returning "High" for values above 70000?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'p18')">lambda x: "High" if x > 70000 else "Normal"</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'p18')">lambda x: if x > 70000: "High"</button>
+      </div>
+      <div class="quiz-feedback" id="p18-feedback"></div>
+    </div>
+
+    <div class="quiz-block"><span class="quiz-tag">Sorting &amp; Ranking</span>
+      <div class="quiz-q">Difference between <span class="mono">df.nlargest(5, "salary")</span> and <span class="mono">df.sort_values("salary", ascending=False).head(5)</span>?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'p19')">Same result, but nlargest() doesn't need to sort the whole column first</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'p19')">nlargest() only works on integer columns</button>
+      </div>
+      <div class="quiz-feedback" id="p19-feedback"></div>
+    </div>
+
+    <div class="quiz-block"><span class="quiz-tag">GroupBy &amp; Aggregation</span>
+      <div class="quiz-q">After <span class="mono">df.groupby("department").agg(...)</span>, why might <span class="mono">department_summary["department"]</span> raise a KeyError?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="answerQuiz(this, true, 'p20')">department became the index, not a column</button>
+        <button class="quiz-opt" onclick="answerQuiz(this, false, 'p20')">agg() removes the department data entirely</button>
+      </div>
+      <div class="quiz-feedback" id="p20-feedback"></div>
+    </div>
+  </div>
+</section>
+
+<section id="final-summary">
+  <div class="wrap" style="text-align:center;">
+    <div class="eyebrow" style="justify-content:center;">Course Complete</div>
+    <h2 class="ch-title">From Arrays to Answers</h2>
+    <div class="roadmap-flow" style="justify-content:center;">
+      <span class="roadmap-step">NumPy Arrays</span><span class="roadmap-arrow">&rarr;</span>
+      <span class="roadmap-step">Pandas</span><span class="roadmap-arrow">&rarr;</span>
+      <span class="roadmap-step">Series &amp; DataFrames</span><span class="roadmap-arrow">&rarr;</span>
+      <span class="roadmap-step">Loading &amp; Inspecting</span><span class="roadmap-arrow">&rarr;</span>
+      <span class="roadmap-step">Selecting &amp; Filtering</span><span class="roadmap-arrow">&rarr;</span>
+      <span class="roadmap-step">Cleaning</span><span class="roadmap-arrow">&rarr;</span>
+      <span class="roadmap-step">Feature Engineering</span><span class="roadmap-arrow">&rarr;</span>
+      <span class="roadmap-step">Sorting &amp; Ranking</span><span class="roadmap-arrow">&rarr;</span>
+      <span class="roadmap-step">Grouping &amp; Aggregation</span><span class="roadmap-arrow">&rarr;</span>
+      <span class="roadmap-step final">Real-World Analysis</span>
+    </div>
+    <p class="pull-quote" style="text-align:left; display:inline-block;">Pandas transforms raw, messy data into clean, structured, and meaningful information.</p>
+    <p class="body-text" style="margin:0 auto;">You now have the core workflow used in Data Analysis, Exploratory Data Analysis, Data Cleaning, and Feature Engineering for Machine Learning — the same workflow, on real data, every time.</p>
+  </div>
+</section>
+
+<footer>Sheryians AI School — Pandas: The Complete Course &middot; All 7 sections, workflow, and 20+ practice questions built</footer>
+
+<script>
+  // theme toggle
+  const sunPath = 'M12 4.5V2M12 22v-2.5M4.5 12H2M22 12h-2.5M5.6 5.6 4 4M20 20l-1.6-1.6M18.4 5.6 20 4M4 20l1.6-1.6M12 8a4 4 0 100 8 4 4 0 000-8z';
+  const moonPath = 'M21 12.8A9 9 0 1111.2 3 7 7 0 0021 12.8z';
+  const icon = document.getElementById('theme-icon');
+  function setIcon(theme){ icon.innerHTML = '<path d="' + (theme === 'dark' ? sunPath : moonPath) + '"/>'; }
+  setIcon('dark');
+  function toggleTheme(){
+    const html = document.documentElement;
+    const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    setIcon(next);
+  }
+
+  // progress bar + back to top
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    document.getElementById('progress-bar').style.width = scrolled + '%';
+    document.getElementById('back-to-top').classList.toggle('show', h.scrollTop > 600);
+  });
+
+  // architecture diagram reveal
+  const ecoNodes = document.querySelectorAll('.eco-node');
+  const ecoPaths = document.querySelectorAll('.eco-path');
+  const ecoObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting){
+        ecoNodes.forEach((n, i) => setTimeout(() => n.classList.add('visible'), i * 100));
+        ecoPaths.forEach((p, i) => setTimeout(() => p.classList.add('visible'), 200 + i * 100));
+        ecoObserver.disconnect();
+      }
+    });
+  }, { threshold: 0.3 });
+  document.querySelectorAll('.diagram-shell').forEach(el => ecoObserver.observe(el));
+
+  // code block copy + run
+  function copyCode(btn){
+    const code = btn.closest('.code-block').querySelector('.code-body').innerText;
+    navigator.clipboard.writeText(code);
+    const old = btn.innerText;
+    btn.innerText = 'Copied';
+    setTimeout(() => btn.innerText = old, 1200);
+  }
+  function runCode(btn){
+    const output = btn.closest('.code-block').querySelector('.code-output');
+    if (output) output.classList.add('show');
+  }
+
+  // ---------- Jupyter-style DataFrame renderer (reused by every future section) ----------
+  function renderDF(containerId, data, indexVals){
+    const container = document.getElementById(containerId);
+    if (!container || !data.length){ if(container) container.innerHTML=''; return; }
+    const columns = Object.keys(data[0]);
+    indexVals = indexVals || data.map((_, i) => i);
+    const aligns = columns.map(c => {
+      const allNum = data.every(r => r[c] === null || r[c] === undefined || typeof r[c] === 'number');
+      return allNum ? 'right' : 'left';
+    });
+    let html = '<div class="df-wrap"><table class="df-table"><thead><tr><th class="df-index-h"></th>';
+    columns.forEach((c, ci) => html += `<th data-col="${ci}" style="text-align:${aligns[ci]}">${c}</th>`);
+    html += '</tr></thead><tbody>';
+    data.forEach((row, ri) => {
+      html += `<tr><td class="df-index" data-row="${ri}">${indexVals[ri]}</td>`;
+      columns.forEach((c, ci) => {
+        const v = row[c];
+        const isNan = (v === null || v === undefined || v === '');
+        html += `<td class="df-cell${isNan ? ' df-nan' : ''}" data-row="${ri}" data-col="${ci}" style="text-align:${aligns[ci]}">${isNan ? 'NaN' : v}</td>`;
+      });
+      html += '</tr>';
+    });
+    html += '</tbody></table></div>';
+    container.innerHTML = html;
+    container.querySelectorAll('tbody tr').forEach((tr, i) => {
+      tr.style.animation = `rowEnter .35s ease ${i * 0.03}s both`;
+    });
+  }
+
+  // ---------- s1: Series/DataFrame anatomy ----------
+  const anatomyDemo = [
+    { name: 'Aman', department: 'Engineering', salary: 52000 },
+    { name: 'Riya', department: 'Marketing', salary: 61000 },
+    { name: 'Rahul', department: 'Finance', salary: 47000 },
+    { name: 'Priya', department: 'Data Science', salary: 73000 },
+  ];
+  function clearAnatomyHighlights(){
+    document.querySelectorAll('#anatomy-table td, #anatomy-table th').forEach(el => el.classList.remove('anatomy-highlight'));
+  }
+  function showAnatomy(part, btn){
+    btn.closest('.playground').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    clearAnatomyHighlights();
+    const desc = document.getElementById('anatomy-desc');
+    if (part === 'index'){
+      document.querySelectorAll('#anatomy-table .df-index, #anatomy-table .df-index-h').forEach(el => el.classList.add('anatomy-highlight'));
+      desc.innerHTML = '<strong class="emph">Index</strong> — the label for each row. By default it\'s 0, 1, 2... but it can be set to anything, like employee IDs.';
+    } else if (part === 'header'){
+      document.querySelectorAll('#anatomy-table thead th:not(.df-index-h)').forEach(el => el.classList.add('anatomy-highlight'));
+      desc.innerHTML = '<strong class="emph">Column Names</strong> — the label for each field. This is what you use to select a column: <span class="mono">df["salary"]</span>.';
+    } else if (part === 'row'){
+      document.querySelectorAll('#anatomy-table [data-row="1"]').forEach(el => el.classList.add('anatomy-highlight'));
+      desc.innerHTML = '<strong class="emph">Row</strong> — one complete record. Everything about a single employee, across every column.';
+    } else if (part === 'col'){
+      document.querySelectorAll('#anatomy-table [data-col="2"]').forEach(el => el.classList.add('anatomy-highlight'));
+      desc.innerHTML = '<strong class="emph">Column</strong> — one field, across every record. Pulled out on its own, this is exactly a Series.';
+    } else {
+      document.querySelectorAll('#anatomy-table [data-row="1"][data-col="2"]').forEach(el => el.classList.add('anatomy-highlight'));
+      desc.innerHTML = '<strong class="emph">Cell</strong> — a single value, at the intersection of one row and one column.';
+    }
+  }
+
+  // ---------- employee dataset (mirrors the messy real-world dataset used from Section 2 onward) ----------
+  function mulberry32(seed){
+    return function(){
+      seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+      let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  const empNames = ['Aman Verma','Riya Shah','Rahul Nair','Priya Singh','Karan Mehta','Sneha Gupta','Vikram Rao','Anjali Iyer','Rohan Das','Neha Kapoor','Arjun Malhotra','Divya Menon','Suresh Pillai','Kavya Reddy','Aman Verma'];
+  const empDepartments = ['Engineering','Marketing','Finance','Data Science','HR'];
+  const empCities = ['Delhi','Mumbai','Bangalore','Pune','Chennai'];
+  function generateEmployeeData(){
+    const rand = mulberry32(7);
+    const rows = [];
+    for (let i = 0; i < 15; i++){
+      let department = empDepartments[i % 5];
+      if (i === 2) department = ' engineering ';
+      if (i === 5) department = 'MARKETING';
+      if (i === 8) department = null;
+      let city = empCities[(i * 2) % 5];
+      if (i === 4 || i === 11) city = null;
+      let age = 24 + (i % 10);
+      if (i === 6) age = null;
+      let salary = 45000 + i * 1500;
+      let salaryVal = salary;
+      if (i === 1 || i === 7) salaryVal = String(salary); // stored as text
+      if (i === 3 || i === 9) salaryVal = null; // missing
+      const experience = 1 + (i % 8);
+      const performance_score = 4 + (i % 6);
+      const projects_completed = 2 + (i % 10);
+      const joining_date = `202${1 + (i % 4)}-0${1 + (i % 9)}-${10 + i}`;
+      rows.push({
+        employee_id: i === 14 ? 101 : 101 + i, // last row duplicates the first employee_id
+        name: empNames[i],
+        department, city, age,
+        salary: salaryVal,
+        experience, performance_score, projects_completed,
+        joining_date
+      });
+    }
+    return rows;
+  }
+  const employeeData = generateEmployeeData();
+
+  // ---------- s2: dataset inspector ----------
+  function computeDtypes(data){
+    const columns = Object.keys(data[0]);
+    const result = {};
+    columns.forEach(c => {
+      const vals = data.map(r => r[c]);
+      const hasNull = vals.some(v => v === null || v === undefined || v === '');
+      const nonNull = vals.filter(v => !(v === null || v === undefined || v === ''));
+      const allNum = nonNull.length && nonNull.every(v => typeof v === 'number');
+      if (allNum){
+        const allInt = nonNull.every(v => Number.isInteger(v));
+        result[c] = hasNull ? 'float64' : (allInt ? 'int64' : 'float64');
+      } else {
+        result[c] = 'object';
+      }
+    });
+    return result;
+  }
+  function percentileJS(sorted, p){
+    const idx = (sorted.length - 1) * p;
+    const lower = Math.floor(idx), upper = Math.ceil(idx);
+    if (lower === upper) return sorted[lower];
+    const weight = idx - lower;
+    return sorted[lower] * (1 - weight) + sorted[upper] * weight;
+  }
+  function buildInfoText(data){
+    const columns = Object.keys(data[0]);
+    const dtypes = computeDtypes(data);
+    let lines = [];
+    lines.push("<class 'pandas.core.frame.DataFrame'>");
+    lines.push(`RangeIndex: ${data.length} entries, 0 to ${data.length - 1}`);
+    lines.push(`Data columns (total ${columns.length} columns):`);
+    lines.push(' #   Column               Non-Null Count  Dtype  ');
+    lines.push('---  -------------------  --------------  -------');
+    columns.forEach((c, i) => {
+      const nonNullCount = data.filter(r => !(r[c] === null || r[c] === undefined || r[c] === '')).length;
+      lines.push(` ${String(i).padEnd(3)} ${c.padEnd(20)} ${(nonNullCount + ' non-null').padEnd(15)} ${dtypes[c]}`);
+    });
+    const dtypeCounts = {};
+    Object.values(dtypes).forEach(d => dtypeCounts[d] = (dtypeCounts[d] || 0) + 1);
+    lines.push(`dtypes: ${Object.entries(dtypeCounts).map(([k, v]) => `${k}(${v})`).join(', ')}`);
+    lines.push(`memory usage: ~${(data.length * columns.length * 8 / 1024).toFixed(1)}+ KB`);
+    return lines.join('\n');
+  }
+  function buildDescribe(data){
+    const dtypes = computeDtypes(data);
+    const numericCols = Object.keys(dtypes).filter(c => dtypes[c] === 'int64' || dtypes[c] === 'float64');
+    const stats = ['count', 'mean', 'std', 'min', '25%', '50%', '75%', 'max'];
+    const rows = stats.map(stat => {
+      const row = {};
+      numericCols.forEach(c => {
+        const vals = data.map(r => r[c]).filter(v => typeof v === 'number');
+        const sorted = [...vals].sort((a, b) => a - b);
+        const n = vals.length;
+        const mean = vals.reduce((a, b) => a + b, 0) / n;
+        const std = Math.sqrt(vals.reduce((a, b) => a + (b - mean) ** 2, 0) / (n - 1));
+        let val;
+        if (stat === 'count') val = n;
+        else if (stat === 'mean') val = +mean.toFixed(2);
+        else if (stat === 'std') val = +std.toFixed(2);
+        else if (stat === 'min') val = sorted[0];
+        else if (stat === '25%') val = +percentileJS(sorted, 0.25).toFixed(2);
+        else if (stat === '50%') val = +percentileJS(sorted, 0.5).toFixed(2);
+        else if (stat === '75%') val = +percentileJS(sorted, 0.75).toFixed(2);
+        else val = sorted[n - 1];
+        row[c] = val;
+      });
+      return row;
+    });
+    return { rows, stats };
+  }
+  function renderTextOutput(containerId, text){
+    document.getElementById(containerId).innerHTML =
+      `<div class="code-block"><pre class="code-body">${text}</pre></div>`;
+  }
+  function inspect(kind, btn){
+    btn.closest('.playground').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const out = 'inspect-output';
+    if (kind === 'head'){
+      renderDF(out, employeeData.slice(0, 5), [0, 1, 2, 3, 4]);
+    } else if (kind === 'tail'){
+      renderDF(out, employeeData.slice(-5), [10, 11, 12, 13, 14]);
+    } else if (kind === 'sample'){
+      const idxs = [...Array(15).keys()].sort(() => Math.random() - 0.5).slice(0, 5).sort((a, b) => a - b);
+      renderDF(out, idxs.map(i => employeeData[i]), idxs);
+    } else if (kind === 'shape'){
+      renderTextOutput(out, `(${employeeData.length}, ${Object.keys(employeeData[0]).length})`);
+    } else if (kind === 'columns'){
+      renderTextOutput(out, `Index([${Object.keys(employeeData[0]).map(c => `'${c}'`).join(', ')}],\n      dtype='object')`);
+    } else if (kind === 'index'){
+      renderTextOutput(out, `RangeIndex(start=0, stop=${employeeData.length}, step=1)`);
+    } else if (kind === 'dtypes'){
+      const dtypes = computeDtypes(employeeData);
+      renderTextOutput(out, Object.entries(dtypes).map(([c, d]) => `${c.padEnd(22)}${d}`).join('\n'));
+    } else if (kind === 'info'){
+      renderTextOutput(out, buildInfoText(employeeData));
+    } else if (kind === 'describe'){
+      const { rows, stats } = buildDescribe(employeeData);
+      renderDF(out, rows, stats);
+    }
+  }
+
+  // ---------- s3: loc vs iloc explorer ----------
+  let locMode = 'loc';
+  const locDemoRows = employeeData.slice(0, 6);
+  const locDemoIndex = locDemoRows.map(r => r.employee_id);
+  function renderLocTable(){
+    renderDF('loc-demo-table', locDemoRows.map(r => ({ name: r.name, department: r.department, salary: r.salary })), locDemoIndex);
+  }
+  function setLocMode(mode, btn){
+    locMode = mode;
+    btn.closest('.playground').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('loc-row-label').innerText = mode === 'loc' ? 'Row Label (employee_id)' : 'Row Position (0\u20135)';
+    document.getElementById('loc-row-val').value = mode === 'loc' ? 105 : 4;
+    applyLocSelect();
+  }
+  function applyLocSelect(){
+    renderLocTable();
+    const val = parseInt(document.getElementById('loc-row-val').value);
+    const targetPos = locMode === 'loc' ? locDemoIndex.indexOf(val) : val;
+    document.querySelectorAll('#loc-demo-table [data-row]').forEach(el => {
+      if (parseInt(el.dataset.row) === targetPos) el.classList.add('anatomy-highlight');
+    });
+    const resultText = document.getElementById('loc-result-text');
+    if (targetPos < 0 || targetPos >= locDemoRows.length){
+      resultText.innerHTML = `<span style="color:var(--red);">No row found.</span>`;
+    } else {
+      const r = locDemoRows[targetPos];
+      resultText.innerHTML = locMode === 'loc'
+        ? `<span class="mono">df.loc[${val}]</span> \u2192 finds the row <strong class="emph">labeled</strong> ${val} \u2014 that's ${r.name}, sitting at position ${targetPos}.`
+        : `<span class="mono">df.iloc[${val}]</span> \u2192 finds the row at <strong class="emph">position</strong> ${val}, regardless of its label \u2014 that's ${r.name}, labeled ${locDemoIndex[targetPos]}.`;
+    }
+  }
+
+  // ---------- s3: boolean filter ----------
+  function applyFilter(){
+    const col = document.getElementById('filt-col').value;
+    const op = document.getElementById('filt-op').value;
+    const val = parseFloat(document.getElementById('filt-val').value);
+    const matches = employeeData.map((r, i) => ({ r, i })).filter(({ r }) => {
+      const v = r[col];
+      if (op === '>') return v > val;
+      if (op === '<') return v < val;
+      if (op === '>=') return v >= val;
+      if (op === '<=') return v <= val;
+      return v === val;
+    });
+    document.getElementById('filt-code').innerText = `df[df["${col}"] ${op} ${val}]`;
+    document.getElementById('filt-stats').innerHTML =
+      `<div class="prop-chip">Original rows: <b>${employeeData.length}</b></div>`
+      + `<div class="prop-chip">Filtered rows: <b>${matches.length}</b></div>`
+      + `<div class="prop-chip">Rows removed: <b>${employeeData.length - matches.length}</b></div>`;
+    if (matches.length){
+      renderDF('filt-table', matches.map(({ r }) => ({ employee_id: r.employee_id, name: r.name, department: r.department, [col]: r[col] })), matches.map(({ i }) => i));
+    } else {
+      document.getElementById('filt-table').innerHTML = '<p class="body-text" style="color:var(--text-faint);">No rows match this condition.</p>';
+    }
+  }
+
+  // ---------- s4: missing values playground ----------
+  let mvWorkingSet = null;
+  let mvVisibleCols = ['employee_id', 'department', 'city', 'age', 'salary'];
+  function mvIsMissing(v){ return v === null || v === undefined || v === ''; }
+  function mvGetNumeric(col, dataset){
+    return dataset.map(r => r[col]).filter(v => !mvIsMissing(v) && !isNaN(parseFloat(v))).map(v => parseFloat(v));
+  }
+  function mvMode(col, dataset){
+    const vals = dataset.map(r => r[col]).filter(v => !mvIsMissing(v));
+    const counts = {};
+    vals.forEach(v => counts[v] = (counts[v] || 0) + 1);
+    let best = null, bestCount = -1;
+    Object.entries(counts).forEach(([k, c]) => { if (c > bestCount){ best = k; bestCount = c; } });
+    return best;
+  }
+  function mvColChanged(){
+    const col = document.getElementById('mv-col').value;
+    const isNumeric = (col === 'age' || col === 'salary');
+    let opts = '<option value="drop-rows">Drop rows with missing here</option><option value="drop-col">Drop this column entirely</option>';
+    if (isNumeric) opts += '<option value="fill-mean">Fill with Mean</option><option value="fill-median">Fill with Median</option>';
+    opts += '<option value="fill-mode">Fill with Mode</option><option value="fill-custom">Fill with Custom Value</option>';
+    document.getElementById('mv-action').innerHTML = opts;
+    mvActionChanged();
+  }
+  function mvActionChanged(){
+    document.getElementById('mv-custom-wrap').style.display = document.getElementById('mv-action').value === 'fill-custom' ? 'flex' : 'none';
+  }
+  function mvRender(){
+    renderDF('mv-table', mvWorkingSet.map(r => { const o = {}; mvVisibleCols.forEach(c => o[c] = r[c]); return o; }), mvWorkingSet.map((_, i) => i));
+  }
+  function mvReset(){
+    mvWorkingSet = employeeData.map(r => ({ ...r }));
+    mvVisibleCols = ['employee_id', 'department', 'city', 'age', 'salary'];
+    mvColChanged();
+    mvRender();
+    document.getElementById('mv-stats').innerHTML =
+      `<div class="prop-chip">Rows: <b>${mvWorkingSet.length}</b></div>`
+      + `<div class="prop-chip">Missing values total: <b>${mvVisibleCols.reduce((sum, c) => sum + mvWorkingSet.filter(r => mvIsMissing(r[c])).length, 0)}</b></div>`;
+  }
+  function mvApply(){
+    const col = document.getElementById('mv-col').value;
+    const action = document.getElementById('mv-action').value;
+    let working = mvWorkingSet.map(r => ({ ...r }));
+    const before = working.length;
+
+    if (action === 'drop-rows'){
+      working = working.filter(r => !mvIsMissing(r[col]));
+    } else if (action === 'drop-col'){
+      working = working.map(r => { const c = { ...r }; delete c[col]; return c; });
+      mvVisibleCols = mvVisibleCols.filter(c => c !== col);
+    } else if (action === 'fill-mean'){
+      const nums = mvGetNumeric(col, working);
+      const mean = +(nums.reduce((a, b) => a + b, 0) / nums.length).toFixed(1);
+      working = working.map(r => mvIsMissing(r[col]) ? { ...r, [col]: mean } : r);
+    } else if (action === 'fill-median'){
+      const nums = mvGetNumeric(col, working).sort((a, b) => a - b);
+      const mid = Math.floor(nums.length / 2);
+      const median = nums.length % 2 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
+      working = working.map(r => mvIsMissing(r[col]) ? { ...r, [col]: median } : r);
+    } else if (action === 'fill-mode'){
+      const mode = mvMode(col, working);
+      working = working.map(r => mvIsMissing(r[col]) ? { ...r, [col]: mode } : r);
+    } else {
+      const customVal = document.getElementById('mv-custom').value;
+      working = working.map(r => mvIsMissing(r[col]) ? { ...r, [col]: customVal } : r);
+    }
+
+    mvWorkingSet = working;
+    mvRender();
+    const after = working.length;
+    const missingRemaining = action === 'drop-col' ? 'column removed' : working.filter(r => mvIsMissing(r[col])).length;
+    document.getElementById('mv-stats').innerHTML =
+      `<div class="prop-chip">Rows before: <b>${before}</b></div>`
+      + `<div class="prop-chip">Rows after: <b>${after}</b></div>`
+      + `<div class="prop-chip">Missing in "${col}" remaining: <b>${missingRemaining}</b></div>`;
+  }
+
+  // ---------- s4: isnull / duplicates / text cleaning (computed live from the real dataset) ----------
+  function renderIsnullDemo(){
+    const columns = Object.keys(employeeData[0]);
+    const lines = columns.map(c => `${c.padEnd(22)}${employeeData.filter(r => mvIsMissing(r[c])).length}`);
+    lines.push('dtype: int64');
+    document.getElementById('isnull-out').innerText = lines.join('\n');
+  }
+  function renderDuplicatesDemo(){
+    const seen = new Set();
+    let fullDup = 0;
+    employeeData.forEach(r => { const k = JSON.stringify(r); if (seen.has(k)) fullDup++; seen.add(k); });
+    document.getElementById('dup-default-out').innerText = String(fullDup);
+
+    const seenIds = new Set();
+    let idDup = 0;
+    employeeData.forEach(r => { if (seenIds.has(r.employee_id)) idDup++; seenIds.add(r.employee_id); });
+    document.getElementById('dup-subset-out').innerText = String(idDup);
+  }
+  function renderDuplicateHighlightTable(){
+    const idCounts = {};
+    employeeData.forEach(r => idCounts[r.employee_id] = (idCounts[r.employee_id] || 0) + 1);
+    renderDF('dup-highlight-table', employeeData.map(r => ({ employee_id: r.employee_id, name: r.name, department: r.department })), employeeData.map((_, i) => i));
+    employeeData.forEach((r, i) => {
+      if (idCounts[r.employee_id] > 1){
+        document.querySelectorAll(`#dup-highlight-table [data-row="${i}"]`).forEach(el => el.classList.add('anatomy-highlight'));
+      }
+    });
+  }
+  function toTitleCase(s){ return s.toLowerCase().replace(/\b\w/g, c => c.toUpperCase()); }
+  function renderCleanTextDemo(){
+    const cleaned = [...new Set(employeeData.map(r => r.department === null ? null : toTitleCase(r.department.trim())))];
+    document.getElementById('clean-text-out').innerText = '[' + cleaned.map(v => v === null ? 'nan' : `'${v}'`).join(' ') + ']';
+  }
+
+  // ---------- s5: feature engineering playground ----------
+  function feCleanSalary(r){ const v = parseFloat(r.salary); return isNaN(v) ? null : v; }
+  function feCreate(kind, btn){
+    btn.closest('.playground').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    let rows, codeStr;
+    if (kind === 'annual_salary'){
+      codeStr = 'df["annual_salary"] = df["salary"] * 12';
+      rows = employeeData.map(r => { const s = feCleanSalary(r); return { employee_id: r.employee_id, name: r.name, salary: s, annual_salary: s === null ? null : s * 12 }; });
+    } else if (kind === 'salary_category'){
+      codeStr = 'df["salary_level"] = df["salary"].apply(\n    lambda s: "High" if s > 55000 else "Normal"\n)';
+      rows = employeeData.map(r => { const s = feCleanSalary(r); return { employee_id: r.employee_id, name: r.name, salary: s, salary_level: s === null ? null : (s > 55000 ? 'High' : 'Normal') }; });
+    } else if (kind === 'experience_level'){
+      codeStr = 'df["experience_level"] = df["experience"].apply(\n    lambda e: "Senior" if e >= 5 else ("Mid" if e >= 2 else "Junior")\n)';
+      rows = employeeData.map(r => ({ employee_id: r.employee_id, name: r.name, experience: r.experience, experience_level: r.experience >= 5 ? 'Senior' : (r.experience >= 2 ? 'Mid' : 'Junior') }));
+    } else if (kind === 'performance_category'){
+      codeStr = 'def performance_category(score):\n    if score >= 8:\n        return "Excellent"\n    elif score >= 6:\n        return "Good"\n    else:\n        return "Needs Improvement"\n\ndf["performance_category"] = df["performance_score"].apply(performance_category)';
+      rows = employeeData.map(r => { const cat = r.performance_score >= 8 ? 'Excellent' : (r.performance_score >= 6 ? 'Good' : 'Needs Improvement'); return { employee_id: r.employee_id, name: r.name, performance_score: r.performance_score, performance_category: cat }; });
+    } else {
+      codeStr = 'df["bonus_amount"] = df["performance_score"] * 1000';
+      rows = employeeData.map(r => ({ employee_id: r.employee_id, name: r.name, performance_score: r.performance_score, bonus_amount: r.performance_score * 1000 }));
+    }
+    document.getElementById('fe-code').innerText = codeStr;
+    renderDF('fe-table', rows, rows.map((_, i) => i));
+    const lastColIdx = Object.keys(rows[0]).length - 1;
+    document.querySelectorAll(`#fe-table [data-col="${lastColIdx}"]`).forEach(el => el.classList.add('anatomy-highlight'));
+  }
+
+  // ---------- s6: ranking board ----------
+  function computeAverageRank(value, allValsDesc){
+    const higherCount = allValsDesc.filter(v => v > value).length;
+    const equalCount = allValsDesc.filter(v => v === value).length;
+    return +((higherCount + 1) + (equalCount - 1) / 2).toFixed(1);
+  }
+  function applyRanking(){
+    const col = document.getElementById('rank-col').value;
+    const mode = document.getElementById('rank-mode').value;
+    const getVal = r => col === 'salary' ? feCleanSalary(r) : r[col];
+    const pool = employeeData.filter(r => getVal(r) !== null);
+    const sortedDesc = [...pool].sort((a, b) => getVal(b) - getVal(a));
+    let displayRows, codeStr;
+    if (mode === 'desc'){
+      displayRows = sortedDesc;
+      codeStr = `df.sort_values(by="${col}", ascending=False)`;
+    } else if (mode === 'asc'){
+      displayRows = [...sortedDesc].reverse();
+      codeStr = `df.sort_values(by="${col}", ascending=True)`;
+    } else if (mode === 'top5'){
+      displayRows = sortedDesc.slice(0, 5);
+      codeStr = `df.nlargest(5, "${col}")`;
+    } else if (mode === 'bottom5'){
+      displayRows = [...sortedDesc].reverse().slice(0, 5);
+      codeStr = `df.nsmallest(5, "${col}")`;
+    } else {
+      displayRows = sortedDesc;
+      codeStr = `df["${col}_rank"] = df["${col}"].rank(ascending=False)`;
+    }
+    const allVals = sortedDesc.map(getVal);
+    const rows = displayRows.map(r => {
+      const base = { employee_id: r.employee_id, name: r.name, [col]: getVal(r) };
+      if (mode === 'rank') base[col + '_rank'] = computeAverageRank(getVal(r), allVals);
+      return base;
+    });
+    document.getElementById('rank-code').innerText = codeStr;
+    renderDF('rank-table', rows, rows.map((_, i) => i));
+  }
+
+  // ---------- s7: groupby builder ----------
+  function cleanDept(r){
+    if (r.department === null) return 'Unknown';
+    const t = r.department.trim();
+    if (t.toLowerCase() === 'hr') return 'HR';
+    return toTitleCase(t);
+  }
+  function getExperienceLevel(r){
+    return r.experience >= 5 ? 'Senior' : (r.experience >= 2 ? 'Mid' : 'Junior');
+  }
+  function pulseStages(){
+    document.querySelectorAll('.sac-stage').forEach((el, i) => {
+      el.classList.remove('pulse');
+      void el.offsetWidth;
+      setTimeout(() => el.classList.add('pulse'), i * 150);
+    });
+    const aggSelect = document.getElementById('gb-agg');
+    document.getElementById('sac-apply-label').innerText = aggSelect.selectedOptions[0].innerText.toLowerCase() + '()';
+  }
+  function applyGroupBy(){
+    const groupBy = document.getElementById('gb-groupby').value;
+    const col = document.getElementById('gb-col').value;
+    const agg = document.getElementById('gb-agg').value;
+    const getGroupKey = r => groupBy === 'department' ? cleanDept(r) : (groupBy === 'city' ? (r.city === null ? 'Unknown' : r.city) : getExperienceLevel(r));
+    const getColVal = r => col === 'salary' ? feCleanSalary(r) : r[col];
+
+    const groups = {};
+    employeeData.forEach(r => {
+      const key = getGroupKey(r);
+      const val = getColVal(r);
+      if (val === null) return;
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(val);
+    });
+
+    const resultRows = Object.entries(groups).map(([key, vals]) => {
+      let result;
+      if (agg === 'mean') result = +(vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(2);
+      else if (agg === 'sum') result = +(vals.reduce((a, b) => a + b, 0)).toFixed(2);
+      else if (agg === 'median'){ const s = [...vals].sort((a, b) => a - b); const m = Math.floor(s.length / 2); result = s.length % 2 ? s[m] : +((s[m - 1] + s[m]) / 2).toFixed(2); }
+      else if (agg === 'min') result = Math.min(...vals);
+      else if (agg === 'max') result = Math.max(...vals);
+      else result = vals.length;
+      return { [groupBy]: key, [col + '_' + agg]: result };
+    }).sort((a, b) => (a[groupBy] > b[groupBy] ? 1 : -1));
+
+    document.getElementById('gb-code').innerText = `df.groupby("${groupBy}")["${col}"].${agg}()`;
+    renderDF('gb-table', resultRows, resultRows.map((_, i) => i));
+    pulseStages();
+  }
+  function renderCountSizeDemo(){
+    const groups = {};
+    employeeData.forEach(r => {
+      const key = cleanDept(r);
+      if (!groups[key]) groups[key] = { count: 0, size: 0 };
+      groups[key].size++;
+      if (feCleanSalary(r) !== null) groups[key].count++;
+    });
+    const rows = Object.entries(groups).map(([k, v]) => ({ department: k, 'salary_count()': v.count, 'size()': v.size }));
+    renderDF('count-size-table', rows, rows.map((_, i) => i));
+  }
+
+  // ---------- workflow: business insights (computed live from the real dataset) ----------
+  function renderBusinessInsights(){
+    const salaryGroups = {}, perfGroups = {}, cityCounts = {}, deptCounts = {};
+    employeeData.forEach(r => {
+      const dept = cleanDept(r);
+      const city = r.city === null ? 'Unknown' : r.city;
+      const salary = feCleanSalary(r);
+      if (salary !== null){ (salaryGroups[dept] = salaryGroups[dept] || []).push(salary); }
+      (perfGroups[dept] = perfGroups[dept] || []).push(r.performance_score);
+      cityCounts[city] = (cityCounts[city] || 0) + 1;
+      deptCounts[dept] = (deptCounts[dept] || 0) + 1;
+    });
+    const avg = arr => arr.reduce((a, b) => a + b, 0) / arr.length;
+    const topSalaryDept = Object.entries(salaryGroups).map(([k, v]) => [k, avg(v)]).sort((a, b) => b[1] - a[1])[0];
+    const topPerfDept = Object.entries(perfGroups).map(([k, v]) => [k, avg(v)]).sort((a, b) => b[1] - a[1])[0];
+    const topCity = Object.entries(cityCounts).sort((a, b) => b[1] - a[1])[0];
+    const top5 = [...employeeData].sort((a, b) => b.performance_score - a.performance_score).slice(0, 5);
+    const expHigh = employeeData.filter(r => r.experience >= 5).map(r => r.projects_completed);
+    const expLow = employeeData.filter(r => r.experience < 5).map(r => r.projects_completed);
+    const avgHigh = avg(expHigh).toFixed(1), avgLow = avg(expLow).toFixed(1);
+
+    document.getElementById('qa-1').innerText = `${topSalaryDept[0]} — average salary \u20b9${Math.round(topSalaryDept[1]).toLocaleString()}`;
+    document.getElementById('qa-2').innerText = `${topPerfDept[0]} — average performance score ${topPerfDept[1].toFixed(1)}`;
+    document.getElementById('qa-3').innerText = `${topCity[0]} — ${topCity[1]} employees`;
+    document.getElementById('qa-5').innerText = `Experience 5+: avg ${avgHigh} projects. Experience <5: avg ${avgLow} projects. ${avgHigh > avgLow ? 'Yes — more experienced employees complete more projects, on average, in this dataset.' : 'Not clearly — the two groups are close in this dataset.'}`;
+    renderDF('qa-4-table', top5.map(r => ({ name: r.name, department: cleanDept(r), performance_score: r.performance_score })), top5.map((_, i) => i));
+    const deptCountRows = Object.entries(deptCounts).sort((a, b) => a[0] < b[0] ? -1 : 1).map(([k, v]) => ({ department: k, employee_count: v }));
+    renderDF('qa-6-table', deptCountRows, deptCountRows.map((_, i) => i));
+  }
+
+  // per-question feedback (fixes a bug where every quiz previously showed the same qs1 text)
+  const quizFeedback = {
+    qs1: { correct: 'Correct — labels, per-column types, and native missing-value support are the core additions on top of NumPy.', wrong: 'Not quite — speed comes from NumPy underneath. Pandas\' own contribution is labels, mixed types, and handling messy real-world data.' },
+    qs2: { correct: 'Right — describe() only summarizes numeric-dtype columns by default. A missing column almost always means it\'s stored as object, not a bug in describe() itself.', wrong: 'Not quite — describe() works correctly every time. If a numeric-looking column is missing, check its dtype first.' },
+    qs3: { correct: 'Right — one set of brackets returns a Series, two returns a DataFrame with a single column. The double brackets are a list of column names, not decoration.', wrong: 'Not quite — the number of brackets changes the return type. df["salary"] is a Series; df[["salary"]] is a DataFrame.' },
+    qs4: { correct: 'Right — to_numeric with errors="coerce" turns anything it can\'t parse into NaN instead of raising an error and stopping your whole script.', wrong: 'Not quite — astype() still works, but it crashes the moment it hits a value it can\'t convert, like a stray piece of text.' },
+    qs5: { correct: 'Right — map() is built exactly for this: swapping values using a fixed dictionary lookup, no custom logic needed.', wrong: 'Not quite — apply() would work too, but it\'s more machinery than a simple dictionary swap needs. map() is the direct tool.' },
+    qs6: { correct: 'Right — the default rank() method averages tied positions, so two employees tied for 2nd/3rd both land on 2.5.', wrong: 'Not quite — with the default method, tied values share the average of the ranks they\'d otherwise occupy, not the lower one.' },
+    qs7: { correct: 'Right — size() counts every row in the group regardless of missing values; count() only counts the non-null ones. That gap is exactly how you spot missing data hiding inside a group.', wrong: 'Not quite — size() and count() diverge exactly when a group has missing values. size() still counts the row; count() doesn\'t.' },
+    p1: { correct: 'Right — position 1 in the default 0,1,2... index holds the value 20.', wrong: 'Not quite — with the default index, position 1 is the second value: 20.' },
+    p2: { correct: 'Right — the outer brackets select from df, the inner brackets are a list of column names, so the result is always a DataFrame, even with one column.', wrong: 'Not quite — a list inside the brackets (even a list of one) always returns a DataFrame, not a Series.' },
+    p3: { correct: 'Right — loc slices are label-based and include the ending label, so 0:3 means rows 0, 1, 2, and 3.', wrong: 'Not quite — unlike iloc, loc includes the ending label. 0:3 returns 4 rows, not 3.' },
+    p4: { correct: 'Right — isnull() flags each cell True/False, and .sum() adds up the Trues per column.', wrong: 'Not quite — dropna().count() tells you what\'s left after removal, not where the gaps are.' },
+    p5: { correct: 'Right — fillna() replaces missing values in place; dropna() removes the rows or columns entirely.', wrong: 'Not quite — dropna() removes data. fillna() is the one that fills it in.' },
+    p6: { correct: 'Right — map() is built exactly for value-to-value substitution using a dictionary or Series.', wrong: 'Not quite — apply() can technically do it, but map() is the direct, simpler tool for a fixed lookup.' },
+    p7: { correct: 'Right — Pandas needs & (not and), and each condition needs its own parentheses: (df["salary"] > 50000) & (df["experience"] > 3).', wrong: 'This actually raises an error — Python\'s and doesn\'t work element-wise on a Series. It needs & with parentheses around each side.' },
+    p8: { correct: 'Right — to_numeric with errors="coerce" converts safely and turns anything unconvertible into NaN.', wrong: 'Not quite — astype() doesn\'t actually accept an errors parameter. to_numeric does, and it\'s the safer tool here.' },
+    p9: { correct: 'Right — without return, the function computes a value and throws it away. Every call returns None by default.', wrong: 'apply() handles if/else logic just fine — the real bug is the missing return statements inside the function.' },
+    p10: { correct: 'Right — isin() checks membership against a list of values, exactly what matching multiple categories needs.', wrong: 'Not quite — between() is for a numeric range. Matching against a list of category names is what isin() is for.' },
+    p11: { correct: 'Right — groupby() splits the data by department before .mean() is applied to each group.', wrong: 'Not quite — sort_values() just reorders rows, it doesn\'t compute per-group averages. That\'s groupby()\'s job.' },
+    p12: { correct: 'Right — iloc slicing excludes the ending position, same as normal Python slicing. 0:5 gives positions 0 through 4.', wrong: 'Not quite — iloc excludes the ending position. 0:5 stops before position 5, giving 5 rows total.' },
+    p13: { correct: 'Right — iloc only ever cares about position. If employee_id starts at 101, iloc[0] still returns that first physical row.', wrong: 'Not quite — that\'s what loc[0] would do, and it would fail here since no row is labeled 0. iloc always means position.' },
+    p14: { correct: 'Right — ~ flips every True to False and vice versa, so this keeps every row where the condition is false.', wrong: 'Not quite — == already checks for exact matches. ~ is what flips the whole condition to its opposite.' },
+    p15: { correct: 'Right — with no arguments, dropna() removes a row if even one column is missing, which can quietly gut a dataset. subset=[...] targets only the columns that matter.', wrong: 'dropna() works on any column type — the real danger is how aggressively it removes rows by default.' },
+    p16: { correct: 'Right — duplicated() compares full rows by default. Two rows sharing just one matching column, like an ID, won\'t be flagged unless you pass subset=.', wrong: 'Not quite — it ignores the index and compares actual column values, across every column unless you narrow it with subset=.' },
+    p17: { correct: 'Right — coerce means "convert what you can, and mark the rest as missing" instead of stopping your script on the first bad value.', wrong: 'Speed isn\'t really the difference here — the real advantage is that bad values become NaN instead of raising an error.' },
+    p18: { correct: 'Right — a lambda is a single expression, so the if/else has to be the inline conditional expression form, not a statement.', wrong: 'That\'s not valid syntax — a lambda body can\'t contain an if statement, only the inline value-if-condition-else-value form.' },
+    p19: { correct: 'Right — both give you the same top 5, but nlargest() is more efficient since it never fully sorts the column you don\'t need sorted.', wrong: 'nlargest() works on any numeric column, not just integers. The real difference is efficiency, not compatibility.' },
+    p20: { correct: 'Right — grouped columns become the index after groupby(). reset_index() turns it back into a regular column you can reference by name.', wrong: 'The department data is still there — it just moved to the index. reset_index() brings it back as a column.' },
+  };
+  function answerQuiz(btn, isCorrect, groupId){
+    const group = btn.closest('.quiz-opts');
+    group.querySelectorAll('.quiz-opt').forEach(b => b.disabled = true);
+    btn.classList.add(isCorrect ? 'correct' : 'wrong');
+    const fb = document.getElementById(groupId + '-feedback');
+    fb.classList.add('show');
+    const msg = quizFeedback[groupId];
+    fb.innerHTML = msg ? (isCorrect ? msg.correct : msg.wrong) : (isCorrect ? 'Correct!' : 'Not quite.');
+  }
+
+  // init
+  renderDF('anatomy-table', anatomyDemo);
+  renderDF('teaser-table', employeeData.slice(0, 6), employeeData.slice(0,6).map((_, i) => i));
+  if (document.getElementById('inspect-output')) inspect('head', document.querySelector('#s2 .tab-btn'));
+  if (document.getElementById('loc-demo-table')) applyLocSelect();
+  if (document.getElementById('filt-table')) applyFilter();
+  if (document.getElementById('mv-table')) mvReset();
+  if (document.getElementById('isnull-out')) renderIsnullDemo();
+  if (document.getElementById('dup-default-out')) renderDuplicatesDemo();
+  if (document.getElementById('dup-highlight-table')) renderDuplicateHighlightTable();
+  if (document.getElementById('clean-text-out')) renderCleanTextDemo();
+  if (document.getElementById('fe-table')) feCreate('annual_salary', document.querySelector('#s5 .tab-btn'));
+  if (document.getElementById('rank-table')) applyRanking();
+  if (document.getElementById('gb-table')) applyGroupBy();
+  if (document.getElementById('count-size-table')) renderCountSizeDemo();
+  if (document.getElementById('qa-1')) renderBusinessInsights();
+</script>
+
+</body>
+</html>
